@@ -12,3 +12,109 @@ datasource db {
   provider  = "postgresql"
   url  	    = env("DATABASE_URL")
 }
+
+model User {
+  id         Int      @id @default(autoincrement())
+  sex        String
+  name       String
+  lastName   String
+  phone      String
+  taxpayerId String   @unique
+  email      String   @unique
+  password   String
+  role       String
+  status     String
+  dateBirth  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Truck {
+  id         Int      @id @default(autoincrement())
+  brand      String
+  model      String
+  paint      String
+  year       Int
+  plate      String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Transporter {
+  id         Int      @id @default(autoincrement())
+  name       String
+  lastName   String
+  phone      String
+  taxpayerId String   @unique
+  dateBirth  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Company {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  taxpayerId String   @unique
+  phone      String
+  email      String   @unique
+  city       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Professional {
+  id         Int      @id @default(autoincrement())
+  sex        String
+  name       String
+  lastName   String
+  phone      String
+  taxpayerId String   @unique
+  email      String   @unique
+  professionalLicense String   @unique
+  role       String
+  status     String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Benefit {
+  id                          Int      @id @default(autoincrement())
+  idRemision                 String   @unique
+  idEmpresa                  String
+  regionProcedencia          String
+  granja                      String
+  galpon                      String
+  lineaAves                  String
+  sexo                        String
+  edad                        Int
+  pesoPromedioAveGranja    Float
+  placaVehiculo              String
+  idConductor                String
+  nombreConductor            String
+  idPlanSanitario           String
+  tpProfesionalGranja       String
+  nombreProfesional          String
+  tpProfesionalPlanta       String
+  nombreAuditor              String
+  horaBeneficio              DateTime
+  avesPorGuacal             Int
+  guacalesVacios             Int
+  guacalesUsados             Int
+  guacalExtra                Int
+  avesRemisionadas           Int
+  avesEnGuacalExtra        Int
+  avesColgadas               Int
+  avesAsfixiadas             Int
+  avesDecomisadas            Int
+  avesDestrozadas            Int
+  peso1GuacalVacio         Float
+  pesoTorre7Guacales       Float
+  pesoPromedioAvePlanta    Float
+  diferencialPesoGranjaPlanta Float
+  pesoTonLoteProcesada     Float
+  canalesObtenidas           Int
+  diferencialAvesEntrega    Int
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+}
+
