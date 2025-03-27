@@ -10,7 +10,15 @@ import { TrucksModule } from './app/trucks/trucks.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
-  imports: [UsersModule, BenefitsModule, CompaniesModule, TransportersModule, ProfessionalsModule, TrucksModule, PrismaModule],
+  imports: [
+    UsersModule, 
+    BenefitsModule, 
+    CompaniesModule, 
+    TransportersModule, 
+    ProfessionalsModule,    
+    TrucksModule, 
+    PrismaModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

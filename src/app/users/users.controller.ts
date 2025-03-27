@@ -8,36 +8,63 @@ import { AuthGuard } from '@nestjs/passport';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // Endpoint para crear un usuario
   @Post()
   /* @UseGuards(AuthGuard('jwt')) */
-  create(@Body() createUserDto: CreateUserDto) {
+  async create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
+  // Endpoint para obtener todos los usuarios
   @Get()
   /* @UseGuards(AuthGuard('jwt')) */
   findAll() {
     return this.usersService.findAll();
   }
 
+  // Endpoint para obtener todos los usuarios por rol
+  @Get('role/:role')
+  /* @UseGuards(AuthGuard('jwt')) */
+  findAllByRole(@Param('role') role: string) {
+    return this.usersService.findAllByRole(role);
+  }
+
+  // Endpoint para obtener todos los usuarios por estado
+  @Get('status/:status')
+  /* @UseGuards(AuthGuard('jwt')) */
+  findAllByStatus(@Param('status') status: string) {
+    return this.usersService.findAllByStatus(status);
+  }
+ 
+  // Endpoint para obtener un usuario por numero de identificacion
   @Get(':taxpayerId')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOne(@Param('taxpayerId') taxpayerId: string) {
-    return this.usersService.findOne(taxpayerId);
+  findOneTaxpayer(@Param('taxpayerId') taxpayerId: string) {
+    return this.usersService.findOneTaxpayerId(taxpayerId);
   }
 
-  @Patch(':taxpayerId')
+  // Endpoint para obtener un usuario por id
+  @Get(':id')
+  /* @UseGuards(AuthGuard('jwt')) */
+  findOneId(@Param('id') id: number) {
+    return this.usersService.findOneId(id);
+  }
+
+  // Endpoint para actualizar un usuario
+  @Patch(':id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(
-    @Param('taxpayerId') taxpayerId: string,
+    @Param('id') id: number,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    return this.usersService.update(Number(taxpayerId), updateUserDto);
+    return this.usersService.update(id, updateUserDto);
   }
-
-  @Delete(':taxpayerId')
+  
+  // Endpoint para eliminar un usuario
+  @Delete(':id')
   /* @UseGuards(AuthGuard('jwt')) */
-  remove(@Param('taxpayerId') taxpayerId: string) {
-    return this.usersService.remove(Number(taxpayerId));
+  remove(@Param('id') id: number) {
+    return this.usersService.remove(id);
   }
+  
 }

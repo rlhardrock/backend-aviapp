@@ -2,25 +2,28 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { async } from 'rxjs';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private utilsService: UtilsService,
+  ) {}
 
   // Crear un nuevo usuario
   async create(createUserDto: CreateUserDto) {
     return this.prisma.user.create({
       data: {
-        sex: createUserDto.sex,
-        name: createUserDto.name,
-        lastName: createUserDto.lastName,
-        phone: createUserDto.phone,
-        taxpayerId: createUserDto.taxpayerId,
-        email: createUserDto.email,
+        sex: this.utilsService.capitalizeFirstLetter(createUserDto.sex),
+        name: this.utilsService.capitalizeFirstLetter(createUserDto.name),
+        lastName: this.utilsService.capitalizeFirstLetter(createUserDto.lastName),
+        phone: this.utilsService.formatPhoneNumber(createUserDto.phone),
+        taxpayerId: this.utilsService.formatIdentification(createUserDto.taxpayerId),
+        email: createUserDto.email.toLowerCase(),
         password: createUserDto.password,
-        role: createUserDto.role,
-        status: createUserDto.status,
+        role: this.utilsService.capitalizeFirstLetter(createUserDto.role),
+        status: this.utilsService.capitalizeFirstLetter(createUserDto.status),
         dateBirth: createUserDto.dateBirth,
       },
     });
@@ -31,10 +34,31 @@ export class UsersService {
     return this.prisma.user.findMany();
   }
 
-  // Encuentra un usuario especifico por Identificación Real ID
-  async findOne(taxpayerId: string) {
+  // Encuentra todos los usuarios por rol
+  async findAllByRole(role: string) {
+    return this.prisma.user.findMany({
+      where: { role },
+    });
+  }
+
+  // Encuentra todos los usuarios por estado
+  async findAllByStatus(status: string) {
+    return this.prisma.user.findMany({
+      where: { status },
+    });
+  }
+
+  // Encuentra un usuario especifico por numero de identificación Real ID
+  async findOneTaxpayerId(taxpayerId: string) {
     return this.prisma.user.findUnique({
       where: { taxpayerId },
+    });
+  }
+
+  // Encuentra un usuario especifico por ID
+  async findOneId(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
     });
   }
 
@@ -43,15 +67,15 @@ export class UsersService {
     return this.prisma.user.update({
       where: { id },
       data: {
-        sex: updateUserDto.sex,
-        name: updateUserDto.name,
-        lastName: updateUserDto.lastName,
-        phone: updateUserDto.phone,
-        taxpayerId: updateUserDto.taxpayerId,
-        email: updateUserDto.email,
+        sex: this.utilsService.capitalizeFirstLetter(updateUserDto.sex),
+        name: this.utilsService.capitalizeFirstLetter(updateUserDto.name),
+        lastName: this.utilsService.capitalizeFirstLetter(updateUserDto.lastName),
+        phone: this.utilsService.formatPhoneNumber(updateUserDto.phone),
+        taxpayerId: this.utilsService.formatIdentification(updateUserDto.taxpayerId),
+        email: updateUserDto.email.toLowerCase(),
         password: updateUserDto.password,
-        role: updateUserDto.role,
-        status: updateUserDto.status,
+        role: this.utilsService.capitalizeFirstLetter(updateUserDto.role),
+        status: this.utilsService.capitalizeFirstLetter(updateUserDto.status),
         dateBirth: updateUserDto.dateBirth,
       },
     });
