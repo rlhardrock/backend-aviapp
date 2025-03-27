@@ -1,31 +1,29 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
-
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  /* const config = new DocumentBuilder()
+  const config = new DocumentBuilder()
     .setTitle('API de Beneficio de Aves')
     .setDescription('Documentación de la API con Swagger')
-    .setVersion('1.0') */
+    .setVersion('1.0')
     /*.addBearerAuth()*/ // Para autenticación con JWT
-    /* .build();
+    .build();
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document); */
+  SwaggerModule.setup('api/docs', app, document);
 
   app.setGlobalPrefix('avi'); // Prefijo global para las rutas
 
-  /* app.use(helmet()); // Seguridad con Helmet */
+  app.use(helmet()); // Seguridad con Helmet
 
- /*  app.useGlobalPipes(
+  app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Remueve propiedades no definidas en el DTO
       forbidNonWhitelisted: true, // Lanza error si hay propiedades desconocidas
       transform: false, // Convierte automáticamente los tipos de datos (ej: string a number)
     })
-  ); */
+  );
 
   // Habilitar CORS para que el frontend pueda comunicarse con el backend
   /* app.enableCors({
