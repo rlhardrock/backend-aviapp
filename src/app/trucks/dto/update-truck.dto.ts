@@ -6,21 +6,21 @@ export class UpdateTruckDto extends PartialType(CreateTruckDto) {
 
     @IsString()
     @IsOptional()
-    brand: string;
+    brand?: string;
    
     @IsString()
     @IsOptional()
-    model: string;
+    model?: string;
 
     @IsString()
     @IsOptional()
-    paint: string;
+    paint?: string;
 
     @IsNumber()
     @IsOptional()
-    year: number;
+    year?: number;
 
     @IsString()
     @IsOptional()
-    plate: string;
+    plate?: string;
 }

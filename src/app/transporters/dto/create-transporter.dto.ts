@@ -1,20 +1,17 @@
-import { IsString } from "class-validator";
+import { IsOptional, IsString } from "class-validator";
 
 export class CreateTransporterDto {
 
     @IsString()
-    brand: string;
+    name: string;
 
     @IsString()
-    model: string;
+    lastName: string;
 
     @IsString()
-    paint: string;
+    phone?: string;
 
     @IsString()
-    year: number;
-
-    @IsString()
-    plate: string;
+    taxpayerId: string;
 
 }
