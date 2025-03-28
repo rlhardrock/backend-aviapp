@@ -16,4 +16,7 @@ export class CreateTruckDto {
 
     @IsString()
     plate: string;
+
+    @IsString()
+    trailer: string;
 }

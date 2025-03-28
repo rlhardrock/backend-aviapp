@@ -18,7 +18,7 @@ export class CompaniesService {
     return this.prisma.company.create({
       data: {
         name: this.utilsService.capitalizeFirstLetter(createCompanyDto.name),
-        taxpayerId: this.utilsService.formatIdentification(createCompanyDto.taxpayerId),
+        businessId: this.utilsService.formatIdentification(createCompanyDto.businessId),
         phone: this.utilsService.formatPhoneNumber(createCompanyDto.phone),
         email: createCompanyDto.email.toLowerCase(),
         city: this.utilsService.capitalizeFirstLetter(createCompanyDto.city),
@@ -50,10 +50,10 @@ export class CompaniesService {
   }
 
   // Buscar una empresa por su identificación
-  findByTaxpayerId(taxpayerId: string) {
+  findByBusinessId(businessId: string) {
     return this.prisma.company.findUnique({
       where: {
-        taxpayerId,
+        businessId,
       },
     });
   }
@@ -66,7 +66,7 @@ export class CompaniesService {
       },
       data: {
         name: this.utilsService.capitalizeFirstLetter(updateCompanyDto.name),
-        taxpayerId: this.utilsService.formatIdentification(updateCompanyDto.taxpayerId),
+        businessId: this.utilsService.formatIdentification(updateCompanyDto.businessId),
         phone: this.utilsService.formatPhoneNumber(updateCompanyDto.phone),
         email: updateCompanyDto.email.toLowerCase(),
         city: this.utilsService.capitalizeFirstLetter(updateCompanyDto.city),

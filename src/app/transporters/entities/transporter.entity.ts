@@ -4,7 +4,7 @@ export class Transporter {
     public name: string;
     public lastName: string;
     public phone: string;
-    public taxpayerId: string;
+    public transporterId: string;
     public createdAt: Date;
     public updatedAt: Date;
 

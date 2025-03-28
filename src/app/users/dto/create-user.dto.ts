@@ -1,8 +1,12 @@
 import { IsString, IsEmail, IsDateString, IsOptional } from 'class-validator';
 
 export class CreateUserDto {
+    
   @IsString()
   sex: string;
+
+  @IsString()
+  licenseId: string;
 
   @IsString()
   name: string;

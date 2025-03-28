@@ -17,7 +17,7 @@ export class ProfessionalsService {
     return this.prisma.professional.create({
       data: {
         sex: this.utils.capitalizeFirstLetter(createProfessionalDto.sex),
-        professionalLicense: this.utils.capitalizeFirstLetter(createProfessionalDto.professionalLicense),
+        licenseId: this.utils.capitalizeFirstLetter(createProfessionalDto.licenseId),
         name: this.utils.capitalizeFirstLetter(createProfessionalDto.name),
         lastName: this.utils.capitalizeFirstLetter(createProfessionalDto.lastName),
         phone: this.utils.formatPhoneNumber(createProfessionalDto.phone),
@@ -43,11 +43,11 @@ export class ProfessionalsService {
     });
   }
 
-  // Encontrar un profesional por professionalLicense
-  findByProfessionalLicense(professionalLicense: string) {
+  // Encontrar un profesional por licenseId
+  findByLicenseId(licenseId: string) {
     return this.prisma.professional.findUnique({
       where: {
-        professionalLicense,
+        licenseId,
       },
     });
   }
@@ -87,7 +87,7 @@ export class ProfessionalsService {
       },
       data: {
         sex: this.utils.capitalizeFirstLetter(updateProfessionalDto.sex),
-        professionalLicense: this.utils.capitalizeFirstLetter(updateProfessionalDto.professionalLicense),
+        licenseId: this.utils.capitalizeFirstLetter(updateProfessionalDto.licenseId),
         name: this.utils.capitalizeFirstLetter(updateProfessionalDto.name),
         lastName: this.utils.capitalizeFirstLetter(updateProfessionalDto.lastName),
         phone: this.utils.formatPhoneNumber(updateProfessionalDto.phone),

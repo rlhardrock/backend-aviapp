@@ -14,8 +14,9 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
+  id         String  @default(uuid())
   sex        String
+  licenseId  String   @id @unique
   name       String
   lastName   String
   phone      String
@@ -27,94 +28,130 @@ model User {
   dateBirth  DateTime
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  benefits Benefit[] @relation("UserBenefit")
 }
 
 model Truck {
-  id         Int      @id @default(autoincrement())
+  id         String  @default(uuid())
   brand      String
   model      String
   paint      String
   year       Int
-  plate      String   @unique
+  plate      String   @id @unique
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  benefits Benefit[] @relation("TruckBenefit")
 }
 
 model Transporter {
-  id         Int      @id @default(autoincrement())
-  name       String
-  lastName   String
-  phone      String
-  taxpayerId String   @unique
-  dateBirth  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id            String  @default(uuid())
+  name          String
+  lastName      String
+  phone         String
+  transporterId String   @id @unique
+  dateBirth     DateTime
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  benefits Benefit[] @relation("TransporterBenefit")
 }
 
 model Company {
-  id         Int      @id @default(autoincrement())
+  id         String   @default(uuid())
   name       String   @unique
-  taxpayerId String   @unique
+  businessId String   @id @unique
   phone      String
   email      String   @unique
   city       String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+  benefits Benefit[] @relation("CompanyBenefit")
 }
 
 model Professional {
-  id         Int      @id @default(autoincrement())
-  sex        String
-  name       String
-  lastName   String
-  phone      String
-  taxpayerId String   @unique
-  email      String   @unique
-  professionalLicense String   @unique
-  role       String
-  status     String
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                String   @default(uuid())
+  sex               String
+  name              String
+  lastName          String
+  phone             String  
+  taxpayerId        String   @unique
+  email             String   @unique
+  licenseId         String  @id @unique
+  role              String
+  status            String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  benefits Benefit[] @relation("ProfessionalBenefit")
 }
 
 model Benefit {
-  id                          Int      @id @default(autoincrement())
-  idRemision                 String   @unique
-  idEmpresa                  String
-  regionProcedencia          String
+  id                          String   @id @default(uuid())
+  
+  tpSupervisorPlanta          String
+  idSupervisorPlanta          String
+  nombreSupervisorPlanta      String
+  apellidoSupervisorPlanta    String
+  
+  tpProfesionalPlanta         String
+  idProfesionalPlanta         String
+  nombreProfesionalPlanta     String
+  apellidoProfesionalPlanta   String
+
+  tpInspectorSanitario          String
+  idInspectorSanitario          String
+  nombreInspectorSanitario      String
+  apellidoInspectorSanitario    String
+
+  tpProfesionalGranja         String
+  idProfesionalGranja         String
+  nombreProfesionalGranja     String
+  apellidoProfesionalGranja   String
+
+  placa                       String
+  idConductor                 String
+  nombreConductor             String
+  apellidoConductor           String
+
+  idRemision                  String   @unique
+  idEmpresa                   String
+  idPlanSanitario             String
+  regionProcedencia           String
   granja                      String
   galpon                      String
-  lineaAves                  String
+  lineaAves                   String
   sexo                        String
   edad                        Int
-  pesoPromedioAveGranja    Float
-  placaVehiculo              String
-  idConductor                String
-  nombreConductor            String
-  idPlanSanitario           String
-  tpProfesionalGranja       String
-  nombreProfesional          String
-  tpProfesionalPlanta       String
-  nombreAuditor              String
-  horaBeneficio              DateTime
-  avesPorGuacal             Int
-  guacalesVacios             Int
-  guacalesUsados             Int
-  guacalExtra                Int
-  avesRemisionadas           Int
-  avesEnGuacalExtra        Int
-  avesColgadas               Int
-  avesAsfixiadas             Int
-  avesDecomisadas            Int
-  avesDestrozadas            Int
-  peso1GuacalVacio         Float
-  pesoTorre7Guacales       Float
-  pesoPromedioAvePlanta    Float
-  diferencialPesoGranjaPlanta Float
-  pesoTonLoteProcesada     Float
-  canalesObtenidas           Int
-  diferencialAvesEntrega    Int
+  horaBeneficio               DateTime
+  turnoBeneficio              Int
+
+  pesoPromedioAveGranja       Decimal @default(0) @db.Decimal(6,3)
+  avesPorGuacal               Int @default(0)
+  guacalesVacios              Int @default(0)
+  guacalesUsados              Int @default(0)
+  guacalExtra                 Int @default(0)
+  avesRemisionadas            Int @default(0)
+  avesEnGuacalExtra           Int @default(0)
+
+  avesColgadas                Int @default(0)
+  avesAsfixiadas              Int @default(0)
+  avesDecomisadas             Int @default(0)
+  avesDestrozadas             Int @default(0)
+
+  peso1GuacalVacio            Decimal @default(0) @db.Decimal(6,3)
+  pesoTorre7Guacales          Decimal @default(0) @db.Decimal(6,3)
+  pesoPromedioAvePlanta       Decimal @default(0) @db.Decimal(6,3)
+  diferencialPesoGranjaPlanta Decimal @default(0) @db.Decimal(6,3)
+  pesoTonLoteProcesada        Decimal @default(0) @db.Decimal(6,3)
+  canalesObtenidas            Int @default(0)
+  diferencialAvesEntrega      Int @default(0)
   createdAt                   DateTime @default(now())
   updatedAt                   DateTime @updatedAt
+  
+  user         User         @relation("UserBenefit", fields: [idSupervisorPlanta], references: [licenseId])
+  truck        Truck        @relation("TruckBenefit", fields: [placa], references: [plate])
+  transporter  Transporter  @relation("TransporterBenefit", fields: [idConductor], references: [transporterId])
+  company      Company      @relation("CompanyBenefit", fields: [idEmpresa], references: [businessId])
+  professional Professional @relation("ProfessionalBenefit", fields: [tpProfesionalPlanta], references: [licenseId])
+
+  @@map("benefits")
 }
 

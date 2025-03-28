@@ -29,11 +29,11 @@ export class TransportersController {
     return this.transportersService.findOne(+id);
   }
 
-  // Endpoint para buscar un transportador por su taxpayerId
-  @Get(':taxpayerId')
+  // Endpoint para buscar un transportador por su transporterId
+  @Get(':transporterId')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOneTaxpayer(@Param('taxpayerId') taxpayerId: string) {
-    return this.transportersService.findOneTaxpayer(taxpayerId);
+  findOneTransporter(@Param('transporterId') transporterId: string) {
+    return this.transportersService.findOneTransporter(transporterId);
   }
 
   // Endpoint para actualizar un transportador

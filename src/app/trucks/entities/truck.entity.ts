@@ -6,6 +6,7 @@ export class Truck {
     public paint: string;
     public year: number;
     public plate: string;
+    public trailer: string;
     public createdAt: Date;
     public updatedAt: Date;
 

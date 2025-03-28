@@ -23,4 +23,8 @@ export class UpdateTruckDto extends PartialType(CreateTruckDto) {
     @IsString()
     @IsOptional()
     plate?: string;
+
+    @IsString()
+    @IsOptional()
+    trailer?: string;
 }

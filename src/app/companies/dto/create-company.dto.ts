@@ -6,7 +6,7 @@ export class CreateCompanyDto {
     name: string;
 
     @IsString()
-    taxpayerId: string;
+    businessId: string;
 
     @IsString()
     phone: string;

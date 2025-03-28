@@ -2,7 +2,7 @@ export class Company {
 
     public id: number;
     public name: string;
-    public taxpayerId: string;
+    public businessId: string;
     public phone: string;
     public email: string;
     public city: string;

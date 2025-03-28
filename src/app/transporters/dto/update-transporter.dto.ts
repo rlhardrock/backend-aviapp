@@ -18,5 +18,5 @@ export class UpdateTransporterDto extends PartialType(CreateTransporterDto) {
 
     @IsString()
     @IsOptional()
-    taxpayerId?: string;
+    transporterId?: string;
 }

@@ -19,7 +19,7 @@ export class TransportersService {
         name: this.utilsService.capitalizeFirstLetter(createTransporterDto.name),
         lastName: this.utilsService.capitalizeFirstLetter(createTransporterDto.lastName),
         phone: this.utilsService.formatPhoneNumber(createTransporterDto.phone),
-        taxpayerId: this.utilsService.formatIdentification(createTransporterDto.taxpayerId),
+        transporterId: this.utilsService.formatIdentification(createTransporterDto.transporterId),
       },
     });
   }
@@ -34,9 +34,9 @@ export class TransportersService {
     return this.prisma.transporter.findUnique({ where: { id } });
   }
 
-  //  Buscar un transportador por su taxpayerId
-  findOneTaxpayer(taxpayerId: string) {
-    return this.prisma.transporter.findUnique({ where: { taxpayerId } });
+  //  Buscar un transportador por su transporterId
+  findOneTransporter(transporterId: string) {
+    return this.prisma.transporter.findUnique({ where: { transporterId } });
   }
 
   //  Actualizar un transportador
@@ -47,7 +47,7 @@ export class TransportersService {
         name: this.utilsService.capitalizeFirstLetter(updateTransporterDto.name),
         lastName: this.utilsService.capitalizeFirstLetter(updateTransporterDto.lastName),
         phone: this.utilsService.formatPhoneNumber(updateTransporterDto.phone),
-        taxpayerId: this.utilsService.formatIdentification(updateTransporterDto.taxpayerId),
+        transporterId: this.utilsService.formatIdentification(updateTransporterDto.transporterId),
       },
     });
   }

@@ -10,7 +10,7 @@ export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {
 
     @IsString()
     @IsOptional()
-    taxpayerId?: string;
+    businessId?: string;
 
     @IsString()
     @IsOptional()

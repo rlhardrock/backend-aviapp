@@ -6,7 +6,7 @@ export class CreateProfessionalDto {
     sex: string;
     
     @IsString()
-    professionalLicense: string;
+    licenseId: string;
     
     @IsString()
     name: string;

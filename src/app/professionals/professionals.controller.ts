@@ -36,11 +36,11 @@ export class ProfessionalsController {
     return this.professionalsService.findByTaxpayerId(taxpayerId);
   }
 
-  // Endpoint para obtener un profesional por professionalLicense
-  @Get(':professionalLicense')
-  /* @UseGuards(AuthGuard('jwt')) */
-  findByProfessionalLicense(@Param('professionalLicense') professionalLicense: string) {
-    return this.professionalsService.findByProfessionalLicense(professionalLicense);
+  // Endpoint para obtener un profesional por licenseId
+  @Get(':licenseId')
+  /*  @UseGuards(AuthGuard('jwt')) */
+  findByLicenseId(@Param('licenseId') licenseId: string) {
+    return this.professionalsService.findByLicenseId(licenseId);
   }
 
   // Endpoint para obtener un profesional por role
