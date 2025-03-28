@@ -1,26 +1,109 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { UtilsService } from '../utils/utils.service';
 
 @Injectable()
 export class ProfessionalsService {
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly utils: UtilsService
+  ) {}
+  
+  // Crear un profesional
   create(createProfessionalDto: CreateProfessionalDto) {
-    return 'This action adds a new professional';
+    return this.prisma.professional.create({
+      data: {
+        sex: this.utils.capitalizeFirstLetter(createProfessionalDto.sex),
+        professionalLicense: this.utils.capitalizeFirstLetter(createProfessionalDto.professionalLicense),
+        name: this.utils.capitalizeFirstLetter(createProfessionalDto.name),
+        lastName: this.utils.capitalizeFirstLetter(createProfessionalDto.lastName),
+        phone: this.utils.formatPhoneNumber(createProfessionalDto.phone),
+        taxpayerId: this.utils.formatIdentification(createProfessionalDto.taxpayerId),
+        email: createProfessionalDto.email.toLowerCase(),
+        role: this.utils.capitalizeFirstLetter(createProfessionalDto.role),
+        status: this.utils.capitalizeFirstLetter(createProfessionalDto.status),
+      },
+    });
   }
 
+  // Listar todos los profesionales
   findAll() {
-    return `This action returns all professionals`;
+    return this.prisma.professional.findMany();
   }
 
+  // Encontrar un profesional por id
   findOne(id: number) {
-    return `This action returns a #${id} professional`;
+    return this.prisma.professional.findUnique({
+      where: {
+        id,
+      },
+    });
   }
 
+  // Encontrar un profesional por professionalLicense
+  findByProfessionalLicense(professionalLicense: string) {
+    return this.prisma.professional.findUnique({
+      where: {
+        professionalLicense,
+      },
+    });
+  }
+
+  // Encontrar un profesional por rol
+  findByRole(role: string) {
+    return this.prisma.professional.findMany({
+      where: {
+        role,
+      },
+    });
+  }
+
+  // Encontrar un profesional por status
+  findByStatus(status: string) {
+    return this.prisma.professional.findMany({
+      where: {
+        status,
+      },
+    });
+  }
+
+  // Encontrar un profesional por taxpayerId
+  findByTaxpayerId(taxpayerId: string) {
+    return this.prisma.professional.findUnique({
+      where: {
+        taxpayerId,
+      },
+    });
+  }
+
+  // Actualizar un profesional
   update(id: number, updateProfessionalDto: UpdateProfessionalDto) {
-    return `This action updates a #${id} professional`;
+    return this.prisma.professional.update({
+      where: {
+        id,
+      },
+      data: {
+        sex: this.utils.capitalizeFirstLetter(updateProfessionalDto.sex),
+        professionalLicense: this.utils.capitalizeFirstLetter(updateProfessionalDto.professionalLicense),
+        name: this.utils.capitalizeFirstLetter(updateProfessionalDto.name),
+        lastName: this.utils.capitalizeFirstLetter(updateProfessionalDto.lastName),
+        phone: this.utils.formatPhoneNumber(updateProfessionalDto.phone),
+        taxpayerId: this.utils.formatIdentification(updateProfessionalDto.taxpayerId),
+        email: updateProfessionalDto.email.toLowerCase(),
+        role: this.utils.capitalizeFirstLetter(updateProfessionalDto.role),
+        status: this.utils.capitalizeFirstLetter(updateProfessionalDto.status),
+      },
+    });
   }
 
   remove(id: number) {
-    return `This action removes a #${id} professional`;
+    return this.prisma.professional.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
