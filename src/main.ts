@@ -19,13 +19,13 @@ async function bootstrap() {
 
   /* app.use(helmet()); // Seguridad con Helmet */
 
- /*  app.useGlobalPipes(
+  app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true, // Remueve propiedades no definidas en el DTO
       forbidNonWhitelisted: true, // Lanza error si hay propiedades desconocidas
       transform: false, // Convierte automáticamente los tipos de datos (ej: string a number)
     })
-  ); */
+  );
 
   // Habilitar CORS para que el frontend pueda comunicarse con el backend
   /* app.enableCors({

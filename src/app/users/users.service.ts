@@ -6,6 +6,7 @@ import { UtilsService } from '../utils/utils.service';
 
 @Injectable()
 export class UsersService {
+ 
   constructor(
     private prisma: PrismaService,
     private utilsService: UtilsService,

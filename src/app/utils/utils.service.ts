@@ -3,6 +3,7 @@ import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js';
 
 @Injectable()
 export class UtilsService {
+    
     // Función para capitalizar la primera letra de cada palabra
     capitalizeFirstLetter(str: string): string {
         return str
@@ -29,4 +30,15 @@ export class UtilsService {
         }
         throw new Error('Número telefónico inválido');
     }
+
+    formatString(input: string): string {
+        // Convertir la cadena a mayúsculas
+        let formatted = input.toUpperCase();
+        // Reemplazar los espacios por guiones
+        formatted = formatted.replace(/\s+/g, '-');
+        // Añadir un guion entre los grupos de letras y números
+        formatted = formatted.replace(/([a-zA-Z]+)(\d+)/g, '$1-$2');
+        formatted = formatted.replace(/(\d+)([a-zA-Z]+)/g, '$1-$2');
+        return formatted;
+     }
 }
