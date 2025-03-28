@@ -52,12 +52,13 @@ export class Benefit {
 
   public  avesColgadas:                 number;
   public  avesAsfixiadas:               number;
-  public  avesDecomisadas:              number;
-  public  avesDestrozadas:              number;
+  public  canalesDecomisadas:           number;
+  public  canalesDestrozadas:           number;
 
   public  peso1GuacalVacio:             number;
   public  pesoTorre7Guacales:           number;
   public  pesoPromedioAvePlanta:        number;
+  
   public  diferencialPesoGranjaPlanta:  number;
   public  pesoTonLoteProcesada:         number;
   public  canalesObtenidas:             number;
