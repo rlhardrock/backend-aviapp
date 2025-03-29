@@ -26,7 +26,7 @@ export class CreateBenefitDto {
     @IsString()
     apellidoProfesionalPlanta:    string;
 
-    @IsString()
+    /* @IsString()
     tpInspectorSanitario:         string;
 
     @IsString()
@@ -36,9 +36,9 @@ export class CreateBenefitDto {
     nombreInspectorSanitario:     string;
 
     @IsString()
-    apellidoInspectorSanitario:   string;
+    apellidoInspectorSanitario:   string; */
 
-    @IsString()
+    /* @IsString()
     tpProfesionalGranja:          string;
 
     @IsString()
@@ -48,7 +48,7 @@ export class CreateBenefitDto {
     nombreProfesionalGranja:      string;
 
     @IsString()
-    apellidoProfesionalGranja:    string;
+    apellidoProfesionalGranja:    string; */
 
     @IsString()
     placa:                        string;

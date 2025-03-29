@@ -15,15 +15,15 @@ export class Benefit {
   public  nombreProfesionalPlanta:      string;
   public  apellidoProfesionalPlanta:    string;
 
-  public  tpInspectorSanitario:         string;
+  /* public  tpInspectorSanitario:         string;
   public  idInspectorSanitario:         string;
   public  nombreInspectorSanitario:     string;
-  public  apellidoInspectorSanitario:   string;
+  public  apellidoInspectorSanitario:   string; */
 
-  public  tpProfesionalGranja:          string;
+  /* public  tpProfesionalGranja:          string;
   public  idProfesionalGranja:          string;
   public  nombreProfesionalGranja:      string;
-  public  apellidoProfesionalGranja:    string;
+  public  apellidoProfesionalGranja:    string; */
 
   public  placa:                        string;
   public  idConductor:                  string;

@@ -96,15 +96,15 @@ model Benefit {
   nombreProfesionalPlanta     String
   apellidoProfesionalPlanta   String
 
-  tpInspectorSanitario          String
+  /* tpInspectorSanitario          String
   idInspectorSanitario          String
   nombreInspectorSanitario      String
-  apellidoInspectorSanitario    String
+  apellidoInspectorSanitario    String */
 
-  tpProfesionalGranja         String
+  /* tpProfesionalGranja         String
   idProfesionalGranja         String
   nombreProfesionalGranja     String
-  apellidoProfesionalGranja   String
+  apellidoProfesionalGranja   String */
 
   placa                       String
   idConductor                 String

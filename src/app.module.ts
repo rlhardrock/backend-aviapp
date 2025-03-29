@@ -8,6 +8,7 @@ import { TransportersModule } from './app/transporters/transporters.module';
 import { ProfessionalsModule } from './app/professionals/professionals.module';
 import { TrucksModule } from './app/trucks/trucks.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { InspectorsModule } from './app/inspectors/inspectors.module';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { PrismaModule } from './prisma/prisma.module';
     TransportersModule, 
     ProfessionalsModule,    
     TrucksModule, 
-    PrismaModule,
+    PrismaModule, InspectorsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

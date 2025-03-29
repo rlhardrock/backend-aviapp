@@ -36,7 +36,7 @@ export class UpdateBenefitDto extends PartialType(CreateBenefitDto) {
     @IsString()
     apellidoProfesionalPlanta?:    string;
 
-    @IsOptional()
+    /* @IsOptional()
     @IsString()
     tpInspectorSanitario?:         string;
 
@@ -50,9 +50,9 @@ export class UpdateBenefitDto extends PartialType(CreateBenefitDto) {
 
     @IsOptional()
     @IsString()
-    apellidoInspectorSanitario?:   string;
+    apellidoInspectorSanitario?:   string; */
 
-    @IsOptional()
+    /* @IsOptional()
     @IsString()
     tpProfesionalGranja?:          string;
 
@@ -66,7 +66,7 @@ export class UpdateBenefitDto extends PartialType(CreateBenefitDto) {
 
     @IsOptional()
     @IsString()
-    apellidoProfesionalGranja?:    string;
+    apellidoProfesionalGranja?:    string; */
 
     @IsOptional()
     @IsString()
