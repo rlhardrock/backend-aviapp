@@ -3,11 +3,13 @@ import { BenefitsService } from './benefits.service';
 import { BenefitsController } from './benefits.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
 import { UtilsService } from '../utils/utils.service';
+import { BenefitsFormulasService } from './benefits-formulas.service';
 
 @Module({
   imports: [
     PrismaModule, 
-    UtilsService
+    UtilsService,
+    BenefitsFormulasService
   ],
   controllers: [BenefitsController],
   providers: [BenefitsService],
