@@ -9,24 +9,35 @@ export class TransportersService {
 
   constructor(
     private prisma: PrismaService,
-    private utilsService: UtilsService,
+    private utils: UtilsService,
   ) {}
 
   //  Crear un nuevo transportador
   create(createTransporterDto: CreateTransporterDto) {
     return this.prisma.transporter.create({
       data: {
-        name: this.utilsService.capitalizeFirstLetter(createTransporterDto.name),
-        lastName: this.utilsService.capitalizeFirstLetter(createTransporterDto.lastName),
-        phone: this.utilsService.formatPhoneNumber(createTransporterDto.phone),
-        transporterId: this.utilsService.formatIdentification(createTransporterDto.transporterId),
+        name: this.utils.capitalizeFirstLetter(createTransporterDto.name),
+        lastName: this.utils.capitalizeFirstLetter(createTransporterDto.lastName),
+        phone: this.utils.formatPhoneNumber(createTransporterDto.phone),
+        transporterId: this.utils.formatIdentification(createTransporterDto.transporterId),
       },
     });
   }
 
   //  Listar todos los transportadores
-  findAll() {
-    return this.prisma.transporter.findMany();
+  async findAll(page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [transporters, total] = await Promise.all([
+      this.prisma.transporter.findMany({ take, skip }),
+      this.prisma.transporter.count()
+    ])
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      transporters
+    };
   }
 
   //  Buscar un transportador por su id
@@ -44,10 +55,10 @@ export class TransportersService {
     return  this.prisma.transporter.update({
       where: { id },
       data: {
-        name: this.utilsService.capitalizeFirstLetter(updateTransporterDto.name),
-        lastName: this.utilsService.capitalizeFirstLetter(updateTransporterDto.lastName),
-        phone: this.utilsService.formatPhoneNumber(updateTransporterDto.phone),
-        transporterId: this.utilsService.formatIdentification(updateTransporterDto.transporterId),
+        name: this.utils.capitalizeFirstLetter(updateTransporterDto.name),
+        lastName: this.utils.capitalizeFirstLetter(updateTransporterDto.lastName),
+        phone: this.utils.formatPhoneNumber(updateTransporterDto.phone),
+        transporterId: this.utils.formatIdentification(updateTransporterDto.transporterId),
       },
     });
   }

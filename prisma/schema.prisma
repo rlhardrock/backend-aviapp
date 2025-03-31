@@ -68,14 +68,14 @@ model Company {
 }
 
 model Professional {
-  id                String   @default(uuid())
+  id                String @default(uuid())
   sex               String
   name              String
   lastName          String
   phone             String  
-  taxpayerId        String   @unique
-  email             String   @unique
-  licenseId         String  @id @unique
+  taxpayerId        String @unique
+  email             String @unique
+  licenseId         String @id @unique
   role              String
   status            String
   createdAt       DateTime @default(now())

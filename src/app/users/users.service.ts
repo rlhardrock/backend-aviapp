@@ -9,44 +9,73 @@ export class UsersService {
  
   constructor(
     private prisma: PrismaService,
-    private utilsService: UtilsService,
+    private utils: UtilsService,
   ) {}
 
   // Crear un nuevo usuario
   async create(createUserDto: CreateUserDto) {
     return this.prisma.user.create({
       data: {
-        sex: this.utilsService.capitalizeFirstLetter(createUserDto.sex),
-        name: this.utilsService.capitalizeFirstLetter(createUserDto.name),
-        lastName: this.utilsService.capitalizeFirstLetter(createUserDto.lastName),
-        phone: this.utilsService.formatPhoneNumber(createUserDto.phone),
-        taxpayerId: this.utilsService.formatIdentification(createUserDto.taxpayerId),
+        sex: this.utils.capitalizeFirstLetter(createUserDto.sex),
+        name: this.utils.capitalizeFirstLetter(createUserDto.name),
+        lastName: this.utils.capitalizeFirstLetter(createUserDto.lastName),
+        phone: this.utils.formatPhoneNumber(createUserDto.phone),
+        taxpayerId: this.utils.formatIdentification(createUserDto.taxpayerId),
         email: createUserDto.email.toLowerCase(),
         password: createUserDto.password,
-        role: this.utilsService.capitalizeFirstLetter(createUserDto.role),
-        status: this.utilsService.capitalizeFirstLetter(createUserDto.status),
+        role: this.utils.capitalizeFirstLetter(createUserDto.role),
+        status: this.utils.capitalizeFirstLetter(createUserDto.status),
         dateBirth: createUserDto.dateBirth,
       },
     });
   }
 
   // Encuentra todos los usuarios
-  async findAll() {
-    return this.prisma.user.findMany();
+  async findAll(page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({ take, skip }),
+      this.prisma.user.count()
+    ])
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      users,
+    };
   }
 
   // Encuentra todos los usuarios por rol
-  async findAllByRole(role: string) {
-    return this.prisma.user.findMany({
-      where: { role },
-    });
+  async findAllByRole(role: string, page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({ where: { role }, take, skip }),
+      this.prisma.user.count({ where: { role } }),
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      users,
+    };
   }
 
   // Encuentra todos los usuarios por estado
-  async findAllByStatus(status: string) {
-    return this.prisma.user.findMany({
-      where: { status },
-    });
+  async findAllByStatus(status: string, page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [users, total] = await Promise.all([
+      this.prisma.user.findMany({ where: { status }, take, skip }),
+      this.prisma.user.count({ where: { status } }),
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      users,
+    };
   }
 
   // Encuentra un usuario especifico por numero de identificación Real ID
@@ -68,15 +97,15 @@ export class UsersService {
     return this.prisma.user.update({
       where: { id },
       data: {
-        sex: this.utilsService.capitalizeFirstLetter(updateUserDto.sex),
-        name: this.utilsService.capitalizeFirstLetter(updateUserDto.name),
-        lastName: this.utilsService.capitalizeFirstLetter(updateUserDto.lastName),
-        phone: this.utilsService.formatPhoneNumber(updateUserDto.phone),
-        taxpayerId: this.utilsService.formatIdentification(updateUserDto.taxpayerId),
+        sex: this.utils.capitalizeFirstLetter(updateUserDto.sex),
+        name: this.utils.capitalizeFirstLetter(updateUserDto.name),
+        lastName: this.utils.capitalizeFirstLetter(updateUserDto.lastName),
+        phone: this.utils.formatPhoneNumber(updateUserDto.phone),
+        taxpayerId: this.utils.formatIdentification(updateUserDto.taxpayerId),
         email: updateUserDto.email.toLowerCase(),
         password: updateUserDto.password,
-        role: this.utilsService.capitalizeFirstLetter(updateUserDto.role),
-        status: this.utilsService.capitalizeFirstLetter(updateUserDto.status),
+        role: this.utils.capitalizeFirstLetter(updateUserDto.role),
+        status: this.utils.capitalizeFirstLetter(updateUserDto.status),
         dateBirth: updateUserDto.dateBirth,
       },
     });

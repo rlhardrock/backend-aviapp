@@ -9,25 +9,36 @@ export class TrucksService {
 
   constructor(
     private prisma: PrismaService,
-    private utilsService: UtilsService,
+    private utils: UtilsService,
   ) {}
 
   // Crear un nuevo camión
   async create(createTruckDto: CreateTruckDto) {
     return this.prisma.truck.create({
       data: {
-        brand: this.utilsService.capitalizeFirstLetter(createTruckDto.brand),
-        model: this.utilsService.capitalizeFirstLetter(createTruckDto.model),
-        paint: this.utilsService.capitalizeFirstLetter(createTruckDto.paint),
+        brand: this.utils.capitalizeFirstLetter(createTruckDto.brand),
+        model: this.utils.capitalizeFirstLetter(createTruckDto.model),
+        paint: this.utils.capitalizeFirstLetter(createTruckDto.paint),
         year: createTruckDto.year,
-        plate: this.utilsService.formatString(createTruckDto.plate),
+        plate: this.utils.formatString(createTruckDto.plate),
       },
     });
   }
 
   // Encuentra todos los camiones
-  async findAll() {
-    return this.prisma.truck.findMany();
+  async findAll(page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [trucks, total] = await Promise.all([
+      this.prisma.truck.findMany({ take, skip }),
+      this.prisma.truck.count()
+    ])
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      trucks,
+    };
   }
 
   // Encuentra un camión por ID
@@ -38,31 +49,67 @@ export class TrucksService {
   }
 
   // Encuentra un camión por placa
-  async findOneByPlate(plate: string) {
-    return this.prisma.truck.findUnique({
-      where: { plate },
-    });
+  async findOneByPlate(plate: string  , page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [trucks, total] = await Promise.all([
+      this.prisma.truck.findMany({ where: { plate }, take, skip }),
+      this.prisma.truck.count({ where: { plate } }),
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      trucks,
+    };
   }
   
   // Encuentra todos los camiones por marca
-  async findAllByBrand(brand: string) {
-    return this.prisma.truck.findMany({
-      where: { brand },
-    });
+  async findAllByBrand(brand: string  , page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [trucks, total] = await Promise.all([
+      this.prisma.truck.findMany({ where: { brand }, take, skip }),
+      this.prisma.truck.count({ where: { brand } }),
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      trucks,
+    };
   }
 
   // Encuentra todos los camiones por modelo
-  async findAllByModel(model: string) {
-    return this.prisma.truck.findMany({
-      where: { model },
-    });
+  async findAllByModel(model: string, page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [trucks, total] = await Promise.all([
+      this.prisma.truck.findMany({ where: { model }, take, skip }),
+      this.prisma.truck.count({ where: { model } }),
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      trucks,
+    };
   }
 
   // Encuentra todos los camiones por color
-  async findAllByPaint(paint: string) {
-    return this.prisma.truck.findMany({
-      where: { paint },
-    });
+  async findAllByPaint(paint: string, page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [trucks, total] = await Promise.all([
+      this.prisma.truck.findMany({ where: { paint }, take, skip }),
+      this.prisma.truck.count({ where: { paint } }),
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      trucks,
+    };
   }
 
   // Actualizar un camión existente
@@ -70,11 +117,11 @@ export class TrucksService {
     return this.prisma.truck.update({
       where: { id },
       data: {
-        brand: this.utilsService.capitalizeFirstLetter(updateTruckDto.brand),
-        model: this.utilsService.capitalizeFirstLetter(updateTruckDto.model),
-        paint: this.utilsService.capitalizeFirstLetter(updateTruckDto.paint),
+        brand: this.utils.capitalizeFirstLetter(updateTruckDto.brand),
+        model: this.utils.capitalizeFirstLetter(updateTruckDto.model),
+        paint: this.utils.capitalizeFirstLetter(updateTruckDto.paint),
         year: updateTruckDto.year,
-        plate: this.utilsService.formatString(updateTruckDto.plate),
+        plate: this.utils.formatString(updateTruckDto.plate),
       },
     });
   }

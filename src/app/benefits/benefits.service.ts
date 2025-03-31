@@ -10,34 +10,34 @@ export class BenefitsService {
 
   constructor(
     private prisma: PrismaService,
-    private utilsService: UtilsService,
-    private benefitsFormulasService: BenefitsFormulasService,
+    private utils: UtilsService,
+    private benefitsFormulas: BenefitsFormulasService,
   ) {}
  
   // Crear un nuevo benefit
   async create(createBenefitDto: CreateBenefitDto) {
     return this.prisma.benefit.create({
       data: {
-        tpSupervisorPlanta: this.utilsService.formatString(createBenefitDto.tpSupervisorPlanta),
-        idSupervisorPlanta: this.utilsService.formatIdentification(createBenefitDto.idSupervisorPlanta),
-        nombreSupervisorPlanta: this.utilsService.capitalizeFirstLetter(createBenefitDto.nombreSupervisorPlanta),
-        apellidoSupervisorPlanta: this.utilsService.capitalizeFirstLetter(createBenefitDto.apellidoSupervisorPlanta),
-        tpProfesionalPlanta: this.utilsService.formatString(createBenefitDto.tpProfesionalPlanta),
-        idProfesionalPlanta: this.utilsService.formatIdentification(createBenefitDto.idProfesionalPlanta),
-        nombreProfesionalPlanta: this.utilsService.capitalizeFirstLetter(createBenefitDto.nombreProfesionalPlanta),
-        apellidoProfesionalPlanta: this.utilsService.capitalizeFirstLetter(createBenefitDto.apellidoProfesionalPlanta),
-        placa: this.utilsService.formatString(createBenefitDto.placa),
-        idConductor: this.utilsService.formatIdentification(createBenefitDto.idConductor),
-        nombreConductor: this.utilsService.capitalizeFirstLetter(createBenefitDto.nombreConductor),
-        apellidoConductor: this.utilsService.capitalizeFirstLetter(createBenefitDto.apellidoConductor),
-        idRemision: this.utilsService.formatString(createBenefitDto.idRemision),
-        idEmpresa: this.utilsService.formatString(createBenefitDto.idEmpresa),
-        idPlanSanitario: this.utilsService.formatString(createBenefitDto.idPlanSanitario),
-        regionProcedencia: this.utilsService.capitalizeFirstLetter(createBenefitDto.regionProcedencia),
-        granja: this.utilsService.capitalizeFirstLetter(createBenefitDto.granja),
-        galpon: this.utilsService.formatString(createBenefitDto.galpon),
-        lineaAves: this.utilsService.capitalizeFirstLetter(createBenefitDto.lineaAves),
-        sexo: this.utilsService.capitalizeFirstLetter(createBenefitDto.sexo),
+        tpSupervisorPlanta: this.utils.formatString(createBenefitDto.tpSupervisorPlanta),
+        idSupervisorPlanta: this.utils.formatIdentification(createBenefitDto.idSupervisorPlanta),
+        nombreSupervisorPlanta: this.utils.capitalizeFirstLetter(createBenefitDto.nombreSupervisorPlanta),
+        apellidoSupervisorPlanta: this.utils.capitalizeFirstLetter(createBenefitDto.apellidoSupervisorPlanta),
+        tpProfesionalPlanta: this.utils.formatString(createBenefitDto.tpProfesionalPlanta),
+        idProfesionalPlanta: this.utils.formatIdentification(createBenefitDto.idProfesionalPlanta),
+        nombreProfesionalPlanta: this.utils.capitalizeFirstLetter(createBenefitDto.nombreProfesionalPlanta),
+        apellidoProfesionalPlanta: this.utils.capitalizeFirstLetter(createBenefitDto.apellidoProfesionalPlanta),
+        placa: this.utils.formatString(createBenefitDto.placa),
+        idConductor: this.utils.formatIdentification(createBenefitDto.idConductor),
+        nombreConductor: this.utils.capitalizeFirstLetter(createBenefitDto.nombreConductor),
+        apellidoConductor: this.utils.capitalizeFirstLetter(createBenefitDto.apellidoConductor),
+        idRemision: this.utils.formatString(createBenefitDto.idRemision),
+        idEmpresa: this.utils.formatString(createBenefitDto.idEmpresa),
+        idPlanSanitario: this.utils.formatString(createBenefitDto.idPlanSanitario),
+        regionProcedencia: this.utils.capitalizeFirstLetter(createBenefitDto.regionProcedencia),
+        granja: this.utils.capitalizeFirstLetter(createBenefitDto.granja),
+        galpon: this.utils.formatString(createBenefitDto.galpon),
+        lineaAves: this.utils.capitalizeFirstLetter(createBenefitDto.lineaAves),
+        sexo: this.utils.capitalizeFirstLetter(createBenefitDto.sexo),
         edad: createBenefitDto.edad,
         horaBeneficio: createBenefitDto.horaBeneficio,
         turnoBeneficio: createBenefitDto.turnoBeneficio,
@@ -54,54 +54,110 @@ export class BenefitsService {
         canalesDestrozadas: createBenefitDto.canalesDestrozadas,
         peso1GuacalVacio: createBenefitDto.peso1GuacalVacio,
         pesoTorre7Guacales: createBenefitDto.pesoTorre7Guacales,
-        pesoPromedioAvePlanta: this.benefitsFormulasService.calculatePesoAvePlanta(createBenefitDto.pesoTorre7Guacales, createBenefitDto.peso1GuacalVacio, createBenefitDto.avesPorGuacal),
-        diferencialPesoGranjaPlanta: this.benefitsFormulasService.calculateDiferencialPesoIndividual(createBenefitDto.pesoPromedioAveGranja, createBenefitDto.pesoPromedioAvePlanta),
-        pesoTonLoteProcesada: this.benefitsFormulasService.calculatePesoTonelajeLotePlanta(createBenefitDto.pesoPromedioAvePlanta, createBenefitDto.avesColgadas),
-        canalesObtenidas: this.benefitsFormulasService.calculateCanalesEntregarDelLote(createBenefitDto.avesColgadas, createBenefitDto.canalesDecomisadas),
-        diferencialAvesEntrega: this.benefitsFormulasService.calculateEntregaDelLote(createBenefitDto.avesRemisionadas, createBenefitDto.avesColgadas, createBenefitDto.avesAsfixiadas),
-        canalesEnDeuda: this.benefitsFormulasService.calculateCanalesEnDeuda(createBenefitDto.avesRemisionadas, createBenefitDto.avesColgadas, createBenefitDto.avesAsfixiadas, createBenefitDto.canalesDecomisadas),
+        pesoPromedioAvePlanta: this.benefitsFormulas.calculatePesoAvePlanta(createBenefitDto.pesoTorre7Guacales, createBenefitDto.peso1GuacalVacio, createBenefitDto.avesPorGuacal),
+        diferencialPesoGranjaPlanta: this.benefitsFormulas.calculateDiferencialPesoIndividual(createBenefitDto.pesoPromedioAveGranja, createBenefitDto.pesoPromedioAvePlanta),
+        pesoTonLoteProcesada: this.benefitsFormulas.calculatePesoTonelajeLotePlanta(createBenefitDto.pesoPromedioAvePlanta, createBenefitDto.avesColgadas),
+        canalesObtenidas: this.benefitsFormulas.calculateCanalesEntregarDelLote(createBenefitDto.avesColgadas, createBenefitDto.canalesDecomisadas),
+        diferencialAvesEntrega: this.benefitsFormulas.calculateEntregaDelLote(createBenefitDto.avesRemisionadas, createBenefitDto.avesColgadas, createBenefitDto.avesAsfixiadas),
+        canalesEnDeuda: this.benefitsFormulas.calculateCanalesEnDeuda(createBenefitDto.avesRemisionadas, createBenefitDto.avesColgadas, createBenefitDto.avesAsfixiadas, createBenefitDto.canalesDecomisadas),
       }
     });
   }
 
   // listar todo los benefits
-  findAll() {
-    return this.prisma.benefit.findMany();
+  async findAll(page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [benefits, total] = await Promise.all([
+      this.prisma.benefit.findMany({ take, skip }),
+      this.prisma.benefit.count()
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      benefits
+    };
   }
 
   // listar todos los beneficios por idPlanSanitario
-  findAllByIdPlanSanitario(idPlanSanitario: string) {
-    return this.prisma.benefit.findMany({
-      where: { idPlanSanitario },
-    });
+  async findAllByIdPlanSanitario(idPlanSanitario: string, page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [benefits, total] = await Promise.all([
+      this.prisma.benefit.findMany({ take, skip, where: { idPlanSanitario } }),
+      this.prisma.benefit.count({ where: { idPlanSanitario } })
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      benefits
+    };
   }
 
   // listar todos los beneficios por idEmpresa
-  findAllByIdEmpresa(idEmpresa: string) {
-    return this.prisma.benefit.findMany({
-      where: { idEmpresa },
-    });
+  async findAllByIdEmpresa(idEmpresa: string, page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [benefits, total] = await Promise.all([
+      this.prisma.benefit.findMany({ take, skip, where: { idEmpresa } }),
+      this.prisma.benefit.count({ where: { idEmpresa } })
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      benefits
+    };
   }
 
   // listar todos los beneficios por tpProfesionalPlanta
-  findAllByTpProfesionalPlanta(tpProfesionalPlanta: string) {
-    return this.prisma.benefit.findMany({
-      where: { tpProfesionalPlanta },
-    });
+  async findAllByTpProfesionalPlanta(tpProfesionalPlanta: string, page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [benefits, total] = await Promise.all([
+      this.prisma.benefit.findMany({ take, skip, where: { tpProfesionalPlanta } }),
+      this.prisma.benefit.count({ where: { tpProfesionalPlanta } })
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      benefits
+    };
   }
   
   // listar todos los benefits por placa
-  findAllByPlaca(placa: string) {
-    return this.prisma.benefit.findMany({
-      where: { placa },
-    });
+  async findAllByPlaca(placa: string, page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [benefits, total] = await Promise.all([
+      this.prisma.benefit.findMany({ take, skip, where: { placa } }),
+      this.prisma.benefit.count({ where: { placa } })
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      benefits
+    };
   }
 
   // listar todos los benefits por idConductor
-  findAllByIdConductor(idConductor: string) {
-    return this.prisma.benefit.findMany({
-      where: { idConductor },
-    });
+  async findAllByIdConductor(idConductor: string, page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [benefits, total] = await Promise.all([
+      this.prisma.benefit.findMany({ take, skip, where: { idConductor } }),
+      this.prisma.benefit.count({ where: { idConductor } })
+    ]);
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      benefits
+    };
   }
 
   // Encontrar un benefit por ID  
@@ -123,26 +179,26 @@ export class BenefitsService {
     return this.prisma.benefit.update({
       where: { id },
       data: {
-        tpSupervisorPlanta: this.utilsService.formatString(updateBenefitDto.tpSupervisorPlanta),
-        idSupervisorPlanta: this.utilsService.formatIdentification(updateBenefitDto.idSupervisorPlanta),
-        nombreSupervisorPlanta: this.utilsService.capitalizeFirstLetter(updateBenefitDto.nombreSupervisorPlanta),
-        apellidoSupervisorPlanta: this.utilsService.capitalizeFirstLetter(updateBenefitDto.apellidoSupervisorPlanta),
-        tpProfesionalPlanta: this.utilsService.formatString(updateBenefitDto.tpProfesionalPlanta),
-        idProfesionalPlanta: this.utilsService.formatIdentification(updateBenefitDto.idProfesionalPlanta),
-        nombreProfesionalPlanta: this.utilsService.capitalizeFirstLetter(updateBenefitDto.nombreProfesionalPlanta),
-        apellidoProfesionalPlanta: this.utilsService.capitalizeFirstLetter(updateBenefitDto.apellidoProfesionalPlanta),
-        placa: this.utilsService.formatString(updateBenefitDto.placa),
-        idConductor: this.utilsService.formatIdentification(updateBenefitDto.idConductor),
-        nombreConductor: this.utilsService.capitalizeFirstLetter(updateBenefitDto.nombreConductor),
-        apellidoConductor: this.utilsService.capitalizeFirstLetter(updateBenefitDto.apellidoConductor),
-        idRemision: this.utilsService.formatString(updateBenefitDto.idRemision),
-        idEmpresa: this.utilsService.formatString(updateBenefitDto.idEmpresa),
-        idPlanSanitario: this.utilsService.formatString(updateBenefitDto.idPlanSanitario),
-        regionProcedencia: this.utilsService.capitalizeFirstLetter(updateBenefitDto.regionProcedencia),
-        granja: this.utilsService.capitalizeFirstLetter(updateBenefitDto.granja),
-        galpon: this.utilsService.formatString(updateBenefitDto.galpon),
-        lineaAves: this.utilsService.capitalizeFirstLetter(updateBenefitDto.lineaAves),
-        sexo: this.utilsService.capitalizeFirstLetter(updateBenefitDto.sexo),
+        tpSupervisorPlanta: this.utils.formatString(updateBenefitDto.tpSupervisorPlanta),
+        idSupervisorPlanta: this.utils.formatIdentification(updateBenefitDto.idSupervisorPlanta),
+        nombreSupervisorPlanta: this.utils.capitalizeFirstLetter(updateBenefitDto.nombreSupervisorPlanta),
+        apellidoSupervisorPlanta: this.utils.capitalizeFirstLetter(updateBenefitDto.apellidoSupervisorPlanta),
+        tpProfesionalPlanta: this.utils.formatString(updateBenefitDto.tpProfesionalPlanta),
+        idProfesionalPlanta: this.utils.formatIdentification(updateBenefitDto.idProfesionalPlanta),
+        nombreProfesionalPlanta: this.utils.capitalizeFirstLetter(updateBenefitDto.nombreProfesionalPlanta),
+        apellidoProfesionalPlanta: this.utils.capitalizeFirstLetter(updateBenefitDto.apellidoProfesionalPlanta),
+        placa: this.utils.formatString(updateBenefitDto.placa),
+        idConductor: this.utils.formatIdentification(updateBenefitDto.idConductor),
+        nombreConductor: this.utils.capitalizeFirstLetter(updateBenefitDto.nombreConductor),
+        apellidoConductor: this.utils.capitalizeFirstLetter(updateBenefitDto.apellidoConductor),
+        idRemision: this.utils.formatString(updateBenefitDto.idRemision),
+        idEmpresa: this.utils.formatString(updateBenefitDto.idEmpresa),
+        idPlanSanitario: this.utils.formatString(updateBenefitDto.idPlanSanitario),
+        regionProcedencia: this.utils.capitalizeFirstLetter(updateBenefitDto.regionProcedencia),
+        granja: this.utils.capitalizeFirstLetter(updateBenefitDto.granja),
+        galpon: this.utils.formatString(updateBenefitDto.galpon),
+        lineaAves: this.utils.capitalizeFirstLetter(updateBenefitDto.lineaAves),
+        sexo: this.utils.capitalizeFirstLetter(updateBenefitDto.sexo),
         edad: updateBenefitDto.edad,
         horaBeneficio: updateBenefitDto.horaBeneficio,
         turnoBeneficio: updateBenefitDto.turnoBeneficio,
@@ -159,12 +215,12 @@ export class BenefitsService {
         canalesDestrozadas: updateBenefitDto.canalesDestrozadas,
         peso1GuacalVacio: updateBenefitDto.peso1GuacalVacio,
         pesoTorre7Guacales: updateBenefitDto.pesoTorre7Guacales,
-        pesoPromedioAvePlanta: this.benefitsFormulasService.calculatePesoAvePlanta(updateBenefitDto.pesoTorre7Guacales, updateBenefitDto.peso1GuacalVacio, updateBenefitDto.avesPorGuacal),
-        diferencialPesoGranjaPlanta: this.benefitsFormulasService.calculateDiferencialPesoIndividual(updateBenefitDto.pesoPromedioAveGranja, updateBenefitDto.pesoPromedioAvePlanta),
-        pesoTonLoteProcesada: this.benefitsFormulasService.calculatePesoTonelajeLotePlanta(updateBenefitDto.pesoPromedioAvePlanta, updateBenefitDto.avesColgadas),
-        canalesObtenidas: this.benefitsFormulasService.calculateCanalesEntregarDelLote(updateBenefitDto.avesColgadas, updateBenefitDto.canalesDecomisadas),
-        diferencialAvesEntrega: this.benefitsFormulasService.calculateEntregaDelLote(updateBenefitDto.avesRemisionadas, updateBenefitDto.avesColgadas, updateBenefitDto.avesAsfixiadas),
-        canalesEnDeuda: this.benefitsFormulasService.calculateCanalesEnDeuda(updateBenefitDto.avesRemisionadas, updateBenefitDto.avesColgadas, updateBenefitDto.avesAsfixiadas, updateBenefitDto.canalesDecomisadas),
+        pesoPromedioAvePlanta: this.benefitsFormulas.calculatePesoAvePlanta(updateBenefitDto.pesoTorre7Guacales, updateBenefitDto.peso1GuacalVacio, updateBenefitDto.avesPorGuacal),
+        diferencialPesoGranjaPlanta: this.benefitsFormulas.calculateDiferencialPesoIndividual(updateBenefitDto.pesoPromedioAveGranja, updateBenefitDto.pesoPromedioAvePlanta),
+        pesoTonLoteProcesada: this.benefitsFormulas.calculatePesoTonelajeLotePlanta(updateBenefitDto.pesoPromedioAvePlanta, updateBenefitDto.avesColgadas),
+        canalesObtenidas: this.benefitsFormulas.calculateCanalesEntregarDelLote(updateBenefitDto.avesColgadas, updateBenefitDto.canalesDecomisadas),
+        diferencialAvesEntrega: this.benefitsFormulas.calculateEntregaDelLote(updateBenefitDto.avesRemisionadas, updateBenefitDto.avesColgadas, updateBenefitDto.avesAsfixiadas),
+        canalesEnDeuda: this.benefitsFormulas.calculateCanalesEnDeuda(updateBenefitDto.avesRemisionadas, updateBenefitDto.avesColgadas, updateBenefitDto.avesAsfixiadas, updateBenefitDto.canalesDecomisadas),
       }
     });
   }

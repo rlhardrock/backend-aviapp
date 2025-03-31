@@ -41,4 +41,10 @@ export class UtilsService {
         formatted = formatted.replace(/(\d+)([a-zA-Z]+)/g, '$1-$2');
         return formatted;
      }
+
+     paginateList(page: number = 1, limit: number = 10) {
+        const take = Math.max(1, limit); // Evitar valores negativos o 0
+        const skip = (Math.max(1, page) - 1) * take;
+        return { take, skip };
+      }
 }

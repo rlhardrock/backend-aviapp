@@ -10,25 +10,36 @@ export class CompaniesService {
 
   constructor(
     private prisma: PrismaService,
-    private utilsService: UtilsService,
+    private utils: UtilsService,
   ) {}
 
   // Crear un nuevo empresa
   create(createCompanyDto: CreateCompanyDto) {
     return this.prisma.company.create({
       data: {
-        name: this.utilsService.capitalizeFirstLetter(createCompanyDto.name),
-        businessId: this.utilsService.formatIdentification(createCompanyDto.businessId),
-        phone: this.utilsService.formatPhoneNumber(createCompanyDto.phone),
+        name: this.utils.capitalizeFirstLetter(createCompanyDto.name),
+        businessId: this.utils.formatIdentification(createCompanyDto.businessId),
+        phone: this.utils.formatPhoneNumber(createCompanyDto.phone),
         email: createCompanyDto.email.toLowerCase(),
-        city: this.utilsService.capitalizeFirstLetter(createCompanyDto.city),
+        city: this.utils.capitalizeFirstLetter(createCompanyDto.city),
       },
     });
   }
 
   // Listar todos los empresas
-  findAll() {
-    return this.prisma.company.findMany();
+  async findAll(page: number, limit: number) {
+    const { take, skip } = this.utils.paginateList(page, limit);
+    const [companies, total] = await Promise.all([
+      this.prisma.company.findMany({ take, skip }),
+      this.prisma.company.count()
+    ])
+    return {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      companies
+    };
   }
 
   // Buscar un empresa por su ID
@@ -65,11 +76,11 @@ export class CompaniesService {
         id,
       },
       data: {
-        name: this.utilsService.capitalizeFirstLetter(updateCompanyDto.name),
-        businessId: this.utilsService.formatIdentification(updateCompanyDto.businessId),
-        phone: this.utilsService.formatPhoneNumber(updateCompanyDto.phone),
+        name: this.utils.capitalizeFirstLetter(updateCompanyDto.name),
+        businessId: this.utils.formatIdentification(updateCompanyDto.businessId),
+        phone: this.utils.formatPhoneNumber(updateCompanyDto.phone),
         email: updateCompanyDto.email.toLowerCase(),
-        city: this.utilsService.capitalizeFirstLetter(updateCompanyDto.city),
+        city: this.utils.capitalizeFirstLetter(updateCompanyDto.city),
       },
     });
   }
