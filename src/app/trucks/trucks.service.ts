@@ -29,7 +29,7 @@ export class TrucksService {
   async findAll(page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [trucks, total] = await Promise.all([
-      this.prisma.truck.findMany({ take, skip }),
+      this.prisma.truck.findMany({ take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.truck.count()
     ])
     return {
@@ -37,6 +37,8 @@ export class TrucksService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       trucks,
     };
   }
@@ -59,7 +61,7 @@ export class TrucksService {
   async findAllByBrand(brand: string  , page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [trucks, total] = await Promise.all([
-      this.prisma.truck.findMany({ where: { brand }, take, skip }),
+      this.prisma.truck.findMany({ where: { brand }, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.truck.count({ where: { brand } }),
     ]);
     return {
@@ -67,6 +69,8 @@ export class TrucksService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       trucks,
     };
   }
@@ -75,7 +79,7 @@ export class TrucksService {
   async findAllByModel(model: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [trucks, total] = await Promise.all([
-      this.prisma.truck.findMany({ where: { model }, take, skip }),
+      this.prisma.truck.findMany({ where: { model }, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.truck.count({ where: { model } }),
     ]);
     return {
@@ -83,6 +87,8 @@ export class TrucksService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       trucks,
     };
   }
@@ -91,7 +97,7 @@ export class TrucksService {
   async findAllByPaint(paint: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [trucks, total] = await Promise.all([
-      this.prisma.truck.findMany({ where: { paint }, take, skip }),
+      this.prisma.truck.findMany({ where: { paint }, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.truck.count({ where: { paint } }),
     ]);
     return {
@@ -99,6 +105,8 @@ export class TrucksService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       trucks,
     };
   }

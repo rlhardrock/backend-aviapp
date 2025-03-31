@@ -68,7 +68,7 @@ export class BenefitsService {
   async findAll(page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [benefits, total] = await Promise.all([
-      this.prisma.benefit.findMany({ take, skip }),
+      this.prisma.benefit.findMany({ take, skip, orderBy: { id: 'desc' } }),
       this.prisma.benefit.count()
     ]);
     return {
@@ -76,6 +76,8 @@ export class BenefitsService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       benefits
     };
   }
@@ -84,7 +86,7 @@ export class BenefitsService {
   async findAllByIdPlanSanitario(idPlanSanitario: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [benefits, total] = await Promise.all([
-      this.prisma.benefit.findMany({ take, skip, where: { idPlanSanitario } }),
+      this.prisma.benefit.findMany({ take, skip, where: { idPlanSanitario }, orderBy: { id: 'asc' } }),
       this.prisma.benefit.count({ where: { idPlanSanitario } })
     ]);
     return {
@@ -92,6 +94,8 @@ export class BenefitsService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       benefits
     };
   }
@@ -100,7 +104,7 @@ export class BenefitsService {
   async findAllByIdEmpresa(idEmpresa: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [benefits, total] = await Promise.all([
-      this.prisma.benefit.findMany({ take, skip, where: { idEmpresa } }),
+      this.prisma.benefit.findMany({ take, skip, where: { idEmpresa }, orderBy: { id: 'asc' } }),
       this.prisma.benefit.count({ where: { idEmpresa } })
     ]);
     return {
@@ -108,6 +112,8 @@ export class BenefitsService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       benefits
     };
   }
@@ -116,7 +122,7 @@ export class BenefitsService {
   async findAllByTpProfesionalPlanta(tpProfesionalPlanta: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [benefits, total] = await Promise.all([
-      this.prisma.benefit.findMany({ take, skip, where: { tpProfesionalPlanta } }),
+      this.prisma.benefit.findMany({ take, skip, where: { tpProfesionalPlanta }, orderBy: { id: 'asc' } }),
       this.prisma.benefit.count({ where: { tpProfesionalPlanta } })
     ]);
     return {
@@ -124,6 +130,8 @@ export class BenefitsService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       benefits
     };
   }
@@ -132,7 +140,7 @@ export class BenefitsService {
   async findAllByPlaca(placa: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [benefits, total] = await Promise.all([
-      this.prisma.benefit.findMany({ take, skip, where: { placa } }),
+      this.prisma.benefit.findMany({ take, skip, where: { placa }, orderBy: { id: 'asc' } }),
       this.prisma.benefit.count({ where: { placa } })
     ]);
     return {
@@ -140,6 +148,8 @@ export class BenefitsService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       benefits
     };
   }
@@ -148,7 +158,7 @@ export class BenefitsService {
   async findAllByIdConductor(idConductor: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [benefits, total] = await Promise.all([
-      this.prisma.benefit.findMany({ take, skip, where: { idConductor } }),
+      this.prisma.benefit.findMany({ take, skip, where: { idConductor }, orderBy: { id: 'asc' } }),
       this.prisma.benefit.count({ where: { idConductor } })
     ]);
     return {
@@ -156,6 +166,8 @@ export class BenefitsService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       benefits
     };
   }

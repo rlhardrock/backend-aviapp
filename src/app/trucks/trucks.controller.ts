@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TrucksService } from './trucks.service';
 import { CreateTruckDto } from './dto/create-truck.dto';
 import { UpdateTruckDto } from './dto/update-truck.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { PaginationDto } from '../utils/pagination.dto';
 
 @Controller('trucks')
 export class TrucksController {
@@ -17,9 +18,10 @@ export class TrucksController {
 
   // Endpoints para buscar camiones
   @Get('truckList')
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query('page') page: number, @Query('limit') limit: number) {
-    return this.trucksService.findAll(page, limit);
+  findAll(@Query() query: PaginationDto) {
+    return this.trucksService.findAll(query.page, query.limit);
   }
 
   // Endpoints para buscar camiones por ID
@@ -38,23 +40,26 @@ export class TrucksController {
 
   // Endpoints para buscar camiones por marca
   @Get('truck/:brand')
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByBrand(@Param('brand') brand: string, @Query('page') page: number, @Query('limit') limit: number) {
-    return this.trucksService.findAllByBrand(brand, page, limit);
+  findAllByBrand(@Param('brand') brand: string, @Query() query: PaginationDto) {
+    return this.trucksService.findAllByBrand(brand, query.page, query.limit);
   }
 
   // Endpoints para buscar camiones por modelo
   @Get('truck/:model')
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByModel(@Param('model') model: string, @Query('page') page: number, @Query('limit') limit: number) {
-    return this.trucksService.findAllByModel(model, page, limit);
+  findAllByModel(@Param('model') model: string, @Query() query: PaginationDto) {
+    return this.trucksService.findAllByModel(model, query.page, query.limit);
   }
 
   // Endpoints para buscar camiones por color
   @Get('truck/:paint')
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByPaint(@Param('paint') paint: string, @Query('page') page: number, @Query('limit') limit: number) {
-    return this.trucksService.findAllByPaint(paint, page, limit);
+  findAllByPaint(@Param('paint') paint: string, @Query() query: PaginationDto) {
+    return this.trucksService.findAllByPaint(paint, query.page, query.limit);
   }
 
   // Endpoints para actualizar camiones

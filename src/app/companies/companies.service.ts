@@ -30,7 +30,7 @@ export class CompaniesService {
   async findAll(page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [companies, total] = await Promise.all([
-      this.prisma.company.findMany({ take, skip }),
+      this.prisma.company.findMany({ take, skip, orderBy: { id: 'asc' } }),
       this.prisma.company.count()
     ])
     return {
@@ -38,6 +38,8 @@ export class CompaniesService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       companies
     };
   }

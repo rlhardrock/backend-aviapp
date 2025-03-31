@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ProfessionalsService } from './professionals.service';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { PaginationDto } from '../utils/pagination.dto';
 
 @Controller('professionals')
 export class ProfessionalsController {
@@ -17,9 +18,10 @@ export class ProfessionalsController {
 
   // Endpoint para obtener todos los profesionales
   @Get('professionalList')
+  @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query('page') page: number, @Query('limit') limit: number) {
-    return this.professionalsService.findAll(page, limit);
+  findAll(@Query() query: PaginationDto) {
+    return this.professionalsService.findAll(query.page, query.limit);
   }
 
   // Endpoint para obtener un profesional por id
@@ -32,8 +34,8 @@ export class ProfessionalsController {
   // Endpoint para obtener un profesional por taxpayerId
   @Get('professional/:taxpayerId')
   /* @UseGuards(AuthGuard('jwt')) */
-  findByTaxpayerId(@Param('taxpayerId') taxpayerId: string, @Query('page') page: number, @Query('limit') limit: number) {
-    return this.professionalsService.findByTaxpayerId(taxpayerId, page, limit);
+  findByTaxpayer(@Param('taxpayerId') taxpayerId: string) {
+    return this.professionalsService.findByTaxpayer(taxpayerId);
   }
 
   // Endpoint para obtener un profesional por licenseId
@@ -43,18 +45,20 @@ export class ProfessionalsController {
     return this.professionalsService.findByLicenseId(licenseId);
   }
 
-  // Endpoint para obtener un profesional por role
+  // Endpoint para obtener todos los profesionales por role
   @Get('professional/:role')
+  @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
-  findByRole(@Param('role') role: string, @Query('page') page: number, @Query('limit') limit: number) {
-    return this.professionalsService.findByRole(role, page, limit);
+  findByRole(@Param('role') role: string, @Query() query: PaginationDto) {
+    return this.professionalsService.findByRole(role, query.page, query.limit);
   }
 
-  // Endpoint para obtener un profesional por status
+  // Endpoint para obtener todos los profesionales por status
   @Get('professional/:status')
+  @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
-  findByStatus(@Param('status') status: string, @Query('page') page: number, @Query('limit') limit: number) {
-    return this.professionalsService.findByStatus(status, page, limit);
+  findByStatus(@Param('status') status: string, @Query() query: PaginationDto) {
+    return this.professionalsService.findByStatus(status, query.page, query.limit);
   }
 
   // Endpoint para actualizar un profesional

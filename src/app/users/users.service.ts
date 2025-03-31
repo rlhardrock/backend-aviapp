@@ -34,7 +34,7 @@ export class UsersService {
   async findAll(page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [users, total] = await Promise.all([
-      this.prisma.user.findMany({ take, skip }),
+      this.prisma.user.findMany({ take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.user.count()
     ])
     return {
@@ -42,6 +42,8 @@ export class UsersService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       users,
     };
   }
@@ -50,7 +52,7 @@ export class UsersService {
   async findAllByRole(role: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [users, total] = await Promise.all([
-      this.prisma.user.findMany({ where: { role }, take, skip }),
+      this.prisma.user.findMany({ where: { role }, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.user.count({ where: { role } }),
     ]);
     return {
@@ -58,6 +60,8 @@ export class UsersService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       users,
     };
   }
@@ -66,7 +70,7 @@ export class UsersService {
   async findAllByStatus(status: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [users, total] = await Promise.all([
-      this.prisma.user.findMany({ where: { status }, take, skip }),
+      this.prisma.user.findMany({ where: { status }, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.user.count({ where: { status } }),
     ]);
     return {
@@ -74,6 +78,8 @@ export class UsersService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       users,
     };
   }

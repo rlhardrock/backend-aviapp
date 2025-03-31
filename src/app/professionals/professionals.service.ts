@@ -33,7 +33,7 @@ export class ProfessionalsService {
   async findAll(page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [professionals, total] = await Promise.all([
-      this.prisma.professional.findMany({ take, skip }),
+      this.prisma.professional.findMany({ take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.professional.count()
     ])
     return {
@@ -41,6 +41,8 @@ export class ProfessionalsService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       professionals,
     };
   }
@@ -63,11 +65,11 @@ export class ProfessionalsService {
     });
   }
 
-  // Encontrar un profesional por rol
+  // Encontrar todos los profesionales por rol
   async findByRole(role: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [professionals, total] = await Promise.all([
-      this.prisma.professional.findMany({ where: { role }, take, skip }),
+      this.prisma.professional.findMany({ where: { role }, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.professional.count({ where: { role } }),
     ]);
     return {
@@ -75,15 +77,17 @@ export class ProfessionalsService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       professionals,
     };
   }
 
-  // Encontrar un profesional por status
+  // Encontrar todos los profesionales por status
   async findByStatus(status: string, page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [professionals, total] = await Promise.all([
-      this.prisma.professional.findMany({ where: { status }, take, skip }),
+      this.prisma.professional.findMany({ where: { status }, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.professional.count({ where: { status } }),
     ]);
     return {
@@ -91,24 +95,19 @@ export class ProfessionalsService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       professionals,
     };
   }
 
   // Encontrar un profesional por taxpayerId
-  async findByTaxpayerId(taxpayerId: string, page: number, limit: number) {
-    const { take, skip } = this.utils.paginateList(page, limit);
-    const [professionals, total] = await Promise.all([
-      this.prisma.professional.findMany({ where: { taxpayerId }, take, skip }),
-      this.prisma.professional.count({ where: { taxpayerId } }),
-    ]);
-    return {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-      professionals,
-    };
+  async findByTaxpayer(taxpayerId: string) {
+    return this.prisma.professional.findUnique({
+      where: {
+        taxpayerId,
+      },
+    });
   }
 
   // Actualizar un profesional

@@ -42,9 +42,9 @@ export class UtilsService {
         return formatted;
      }
 
-     paginateList(page: number = 1, limit: number = 10) {
-        const take = Math.max(1, limit); // Evitar valores negativos o 0
-        const skip = (Math.max(1, page) - 1) * take;
-        return { take, skip };
+     paginateList(page?: number, limit?: number) {
+        const safePage = Number.isNaN(Number(page)) || page < 1 ? 1 : Number(page);
+        const safeLimit = Number.isNaN(Number(limit)) || limit < 1 ? 10 : Number(limit);
+        return { take: safeLimit, skip: (safePage - 1) * safeLimit };
       }
 }

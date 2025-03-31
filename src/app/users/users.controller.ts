@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { PaginationDto } from '../utils/pagination.dto';
 
 @Controller('users')
 export class UsersController {
@@ -17,23 +18,26 @@ export class UsersController {
 
   // Endpoint para obtener todos los usuarios
   @Get('userList')
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query('page') page: number, @Query('limit') limit: number) {
-    return this.usersService.findAll(page, limit);
+  findAll(@Query() query: PaginationDto) {
+    return this.usersService.findAll(query.page, query.limit);
   }
 
   // Endpoint para obtener todos los usuarios por rol
   @Get('userRole/:role')
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByRole(@Param('role') role: string, @Query('page') page: number, @Query('limit') limit: number) {
-    return this.usersService.findAllByRole(role, page, limit);
+  findAllByRole(@Param('role') role: string, @Query() query: PaginationDto) {
+    return this.usersService.findAllByRole(role, query.page, query.limit);
   }
 
-  // Endpoint para obtener todos los usuarios por estado
+  // Endpoint para obtener todos los usuarios por estado  
   @Get('userStatus/:status')
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByStatus(@Param('status') status: string, @Query('page') page: number, @Query('limit') limit: number) {
-    return this.usersService.findAllByStatus(status, page, limit);
+  findAllByStatus(@Param('status') status: string, @Query() query: PaginationDto) {
+    return this.usersService.findAllByStatus(status, query.page, query.limit);
   }
  
   // Endpoint para obtener un usuario por numero de identificacion

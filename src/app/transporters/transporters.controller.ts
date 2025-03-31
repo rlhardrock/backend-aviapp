@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { TransportersService } from './transporters.service';
 import { CreateTransporterDto } from './dto/create-transporter.dto';
 import { UpdateTransporterDto } from './dto/update-transporter.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { PaginationDto } from '../utils/pagination.dto';
 
 @Controller('transporters')
 export class TransportersController {
@@ -16,10 +17,11 @@ export class TransportersController {
   }
 
   // Endpoint para buscar todos los transportadores
-  @Get('transporterList')
+  @Get('transporterList') 
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query('page') page: number, @Query('limit') limit: number) {
-    return this.transportersService.findAll(page, limit);
+  findAll(@Query() query: PaginationDto) {
+    return this.transportersService.findAll(query.page, query.limit);
   }
 
   // Endpoint para buscar un transportador por su id

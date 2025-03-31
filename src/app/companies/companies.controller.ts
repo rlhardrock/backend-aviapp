@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, ValidationPipe } from '@nestjs/common';
 import { CompaniesService } from './companies.service';
 import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
+import { PaginationDto } from '../utils/pagination.dto';
 
 @Controller('companies')
 export class CompaniesController {
@@ -13,8 +14,9 @@ export class CompaniesController {
   }
 
   @Get('companyList')
-  findAll(@Query('page') page: number, @Query('limit') limit: number) {
-    return this.companiesService.findAll(page, limit);
+  @UsePipes(new ValidationPipe({ transform: true }))  
+  findAll(@Query() query: PaginationDto) {
+    return this.companiesService.findAll(query.page, query.limit);
   }
 
   @Get('company/:id')

@@ -28,7 +28,7 @@ export class TransportersService {
   async findAll(page: number, limit: number) {
     const { take, skip } = this.utils.paginateList(page, limit);
     const [transporters, total] = await Promise.all([
-      this.prisma.transporter.findMany({ take, skip }),
+      this.prisma.transporter.findMany({ take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.transporter.count()
     ])
     return {
@@ -36,6 +36,8 @@ export class TransportersService {
       page,
       limit,
       totalPages: Math.ceil(total / limit),
+      hasNextPage: page * limit < total,
+      hasPrevPage: page > 1,
       transporters
     };
   }
