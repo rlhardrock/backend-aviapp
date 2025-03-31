@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,49 +9,49 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   // Endpoint para crear un usuario
-  @Post()
+  @Post('userRegister')
   /* @UseGuards(AuthGuard('jwt')) */
   async create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   // Endpoint para obtener todos los usuarios
-  @Get()
+  @Get('userList')
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query('page') page: number, @Query('limit') limit: number) {
+    return this.usersService.findAll(page, limit);
   }
 
   // Endpoint para obtener todos los usuarios por rol
-  @Get('role/:role')
+  @Get('userRole/:role')
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByRole(@Param('role') role: string) {
-    return this.usersService.findAllByRole(role);
+  findAllByRole(@Param('role') role: string, @Query('page') page: number, @Query('limit') limit: number) {
+    return this.usersService.findAllByRole(role, page, limit);
   }
 
   // Endpoint para obtener todos los usuarios por estado
-  @Get('status/:status')
+  @Get('userStatus/:status')
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByStatus(@Param('status') status: string) {
-    return this.usersService.findAllByStatus(status);
+  findAllByStatus(@Param('status') status: string, @Query('page') page: number, @Query('limit') limit: number) {
+    return this.usersService.findAllByStatus(status, page, limit);
   }
  
   // Endpoint para obtener un usuario por numero de identificacion
-  @Get(':taxpayerId')
+  @Get('user/:taxpayerId')
   /* @UseGuards(AuthGuard('jwt')) */
   findOneTaxpayer(@Param('taxpayerId') taxpayerId: string) {
     return this.usersService.findOneTaxpayerId(taxpayerId);
   }
 
   // Endpoint para obtener un usuario por id
-  @Get(':id')
+  @Get('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   findOneId(@Param('id') id: number) {
     return this.usersService.findOneId(id);
   }
 
   // Endpoint para actualizar un usuario
-  @Patch(':id')
+  @Patch('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(
     @Param('id') id: number,
@@ -61,7 +61,7 @@ export class UsersController {
   }
   
   // Endpoint para eliminar un usuario
-  @Delete(':id')
+  @Delete('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   remove(@Param('id') id: number) {
     return this.usersService.remove(id);

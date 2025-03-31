@@ -49,19 +49,10 @@ export class TrucksService {
   }
 
   // Encuentra un camión por placa
-  async findOneByPlate(plate: string  , page: number, limit: number) {
-    const { take, skip } = this.utils.paginateList(page, limit);
-    const [trucks, total] = await Promise.all([
-      this.prisma.truck.findMany({ where: { plate }, take, skip }),
-      this.prisma.truck.count({ where: { plate } }),
-    ]);
-    return {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-      trucks,
-    };
+  async findOneByPlate(plate: string) {
+    return this.prisma.truck.findUnique({
+      where: { plate },
+    });
   }
   
   // Encuentra todos los camiones por marca
