@@ -10,7 +10,7 @@ export class UpdateProfessionalDto extends PartialType(CreateProfessionalDto) {
     
     @IsString()
     @IsOptional()
-    licenseId?: string;
+    license?: string;
     
     @IsString()
     @IsOptional()
@@ -26,7 +26,7 @@ export class UpdateProfessionalDto extends PartialType(CreateProfessionalDto) {
     
     @IsString()
     @IsOptional()
-    taxpayerId?: string;
+    taxpayer?: string;
     
     @IsEmail()
     @IsOptional()

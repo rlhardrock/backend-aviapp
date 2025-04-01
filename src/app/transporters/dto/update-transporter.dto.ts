@@ -1,22 +1,27 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateTransporterDto } from './create-transporter.dto';
-import { IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
 
 export class UpdateTransporterDto extends PartialType(CreateTransporterDto) {
 
-    @IsString()
     @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(50)
     name?: string;
 
-    @IsString()
     @IsOptional()
+    @IsString()
+    @IsNotEmpty()
+    @MaxLength(50)
     lastName?: string;
 
-    @IsString()
     @IsOptional()
+    @IsPhoneNumber()
     phone?: string;
 
-    @IsString()
     @IsOptional()
-    transporterId?: string;
+    @IsString()
+    @IsNotEmpty()
+    transporter?: string;
 }

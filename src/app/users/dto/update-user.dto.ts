@@ -10,7 +10,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsString()
-  licenseId?: string;
+  license?: string;
 
   @IsOptional()
   @IsString()
@@ -26,7 +26,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsString()
-  taxpayerId?: string;
+  taxpayer?: string;
 
   @IsOptional()
   @IsEmail()

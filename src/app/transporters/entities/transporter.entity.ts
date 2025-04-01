@@ -1,10 +1,10 @@
 export class Transporter {
 
-    public id: number;
+    public id: string;
     public name: string;
     public lastName: string;
     public phone: string;
-    public transporterId: string;
+    public transporter: string;
     public createdAt: Date;
     public updatedAt: Date;
 

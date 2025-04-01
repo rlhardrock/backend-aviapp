@@ -21,16 +21,26 @@ export class CompaniesController {
 
   @Get('company/:id')
   findOne(@Param('id') id: string) {
-    return this.companiesService.findOne(+id);
+    return this.companiesService.findOne(id);
+  }
+
+  @Get('company/:business')
+  findByBusiness(@Param('business') business: string) {
+    return this.companiesService.findByBusiness(business);
+  }
+
+  @Get('company/:name')
+  findByName(@Param('name') name: string) {
+    return this.companiesService.findByName(name);
   }
 
   @Patch('company/:id')
   update(@Param('id') id: string, @Body() updateCompanyDto: UpdateCompanyDto) {
-    return this.companiesService.update(+id, updateCompanyDto);
+    return this.companiesService.update(id, updateCompanyDto);
   }
 
   @Delete('company/:id')
   remove(@Param('id') id: string) {
-    return this.companiesService.remove(+id);
+    return this.companiesService.remove(id);
   }
 }

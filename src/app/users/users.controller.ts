@@ -41,24 +41,31 @@ export class UsersController {
   }
  
   // Endpoint para obtener un usuario por numero de identificacion
-  @Get('user/:taxpayerId')
+  @Get('user/:taxpayer')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOneTaxpayer(@Param('taxpayerId') taxpayerId: string) {
-    return this.usersService.findOneTaxpayerId(taxpayerId);
+  findOneTaxpayer(@Param('taxpayer') taxpayer: string) {
+    return this.usersService.findOneTaxpayer(taxpayer);
+  }
+
+  // Endpoint para obtener un usuario por numero de licencia profesional
+  @Get('user/:license')
+  /* @UseGuards(AuthGuard('jwt')) */
+  findOneLicense(@Param('license') license: string) {
+    return this.usersService.findOneLicense(license);
   }
 
   // Endpoint para obtener un usuario por id
   @Get('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOneId(@Param('id') id: number) {
-    return this.usersService.findOneId(id);
+  findOne(@Param('id') id: string) {
+    return this.usersService.findOne(id);
   }
 
   // Endpoint para actualizar un usuario
   @Patch('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto
   ) {
     return this.usersService.update(id, updateUserDto);
@@ -67,7 +74,7 @@ export class UsersController {
   // Endpoint para eliminar un usuario
   @Delete('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  remove(@Param('id') id: number) {
+  remove(@Param('id') id: string) {
     return this.usersService.remove(id);
   }
   

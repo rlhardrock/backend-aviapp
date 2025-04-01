@@ -14,13 +14,13 @@ datasource db {
 }
 
 model User {
-  id         String  @default(uuid())
+  id         String   @default(uuid())
   sex        String
-  licenseId  String   @id @unique
+  license    String   @id @unique
   name       String
   lastName   String
   phone      String
-  taxpayerId String   @unique
+  taxpayer   String   @unique
   email      String   @unique
   password   String
   role       String
@@ -48,7 +48,7 @@ model Transporter {
   name          String
   lastName      String
   phone         String
-  transporterId String   @id @unique
+  transporter   String   @id @unique
   dateBirth     DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -58,7 +58,7 @@ model Transporter {
 model Company {
   id         String   @default(uuid())
   name       String   @unique
-  businessId String   @id @unique
+  business   String   @id @unique
   phone      String
   email      String   @unique
   city       String
@@ -73,9 +73,9 @@ model Professional {
   name              String
   lastName          String
   phone             String  
-  taxpayerId        String @unique
+  taxpayer          String @unique
   email             String @unique
-  licenseId         String @id @unique
+  license           String @id @unique
   role              String
   status            String
   createdAt       DateTime @default(now())
@@ -146,11 +146,11 @@ model Benefit {
   createdAt                   DateTime @default(now())
   updatedAt                   DateTime @updatedAt
   
-  user         User         @relation("UserBenefit", fields: [idSupervisorPlanta], references: [licenseId])
+  user         User         @relation("UserBenefit", fields: [idSupervisorPlanta], references: [license])
   truck        Truck        @relation("TruckBenefit", fields: [placa], references: [plate])
-  transporter  Transporter  @relation("TransporterBenefit", fields: [idConductor], references: [transporterId])
-  company      Company      @relation("CompanyBenefit", fields: [idEmpresa], references: [businessId])
-  professional Professional @relation("ProfessionalBenefit", fields: [tpProfesionalPlanta], references: [licenseId])
+  transporter  Transporter  @relation("TransporterBenefit", fields: [idConductor], references: [transporter])
+  company      Company      @relation("CompanyBenefit", fields: [idEmpresa], references: [business])
+  professional Professional @relation("ProfessionalBenefit", fields: [tpProfesionalPlanta], references: [license])
 
   @@map("benefits")
 }

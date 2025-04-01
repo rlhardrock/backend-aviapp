@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, ValidationPipe, HttpException, HttpStatus } from '@nestjs/common';
 import { TrucksService } from './trucks.service';
 import { CreateTruckDto } from './dto/create-truck.dto';
 import { UpdateTruckDto } from './dto/update-truck.dto';
@@ -12,7 +12,7 @@ export class TrucksController {
   // Endpoints para crear camiones
   @Post('truckRegister')
   /* @UseGuards(AuthGuard('jwt')) */
-  create(@Body() createTruckDto: CreateTruckDto) {
+  async create(@Body() createTruckDto: CreateTruckDto) {
     return this.trucksService.create(createTruckDto);
   }
 
@@ -20,21 +20,21 @@ export class TrucksController {
   @Get('truckList')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query() query: PaginationDto) {
+  async findAll(@Query() query: PaginationDto) {
     return this.trucksService.findAll(query.page, query.limit);
   }
 
   // Endpoints para buscar camiones por ID
   @Get('truck/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOne(@Param('id') id: string) {
-    return this.trucksService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return this.trucksService.findOne(id);
   }
 
   // Endpoints para buscar camiones por placa
   @Get('truck/:plate')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOneByPlate(@Param('plate') plate: string) {
+  async findOneByPlate(@Param('plate') plate: string) {
     return this.trucksService.findOneByPlate(plate);
   }
 
@@ -42,7 +42,7 @@ export class TrucksController {
   @Get('truck/:brand')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByBrand(@Param('brand') brand: string, @Query() query: PaginationDto) {
+  async findAllByBrand(@Param('brand') brand: string, @Query() query: PaginationDto) {
     return this.trucksService.findAllByBrand(brand, query.page, query.limit);
   }
 
@@ -50,7 +50,7 @@ export class TrucksController {
   @Get('truck/:model')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByModel(@Param('model') model: string, @Query() query: PaginationDto) {
+  async findAllByModel(@Param('model') model: string, @Query() query: PaginationDto) {
     return this.trucksService.findAllByModel(model, query.page, query.limit);
   }
 
@@ -58,21 +58,41 @@ export class TrucksController {
   @Get('truck/:paint')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByPaint(@Param('paint') paint: string, @Query() query: PaginationDto) {
+  async findAllByPaint(@Param('paint') paint: string, @Query() query: PaginationDto) {
     return this.trucksService.findAllByPaint(paint, query.page, query.limit);
   }
 
   // Endpoints para actualizar camiones
   @Patch('truck/:id')
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  update(@Param('id') id: string, @Body() updateTruckDto: UpdateTruckDto) {
-    return this.trucksService.update(+id, updateTruckDto);
+  async update(
+    @Param('id') id: string, 
+    @Body() updateTruckDto: UpdateTruckDto
+  ) {
+    try {
+      const updatedTruck = await this.trucksService.update(id, updateTruckDto);
+      if (!updatedTruck) {
+        throw new HttpException('Camión no encontrado', HttpStatus.NOT_FOUND);
+      }
+      return {
+        statusCode: HttpStatus.OK,
+        message: `Camión con ID ${id} actualizado satisfactoriamente.`,
+        data: updatedTruck,
+      };
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Falla en la actualización del camión',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   // Endpoints para eliminar camiones
   @Delete('truck/:id')
+  @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  remove(@Param('id') id: string) {
-    return this.trucksService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return this.trucksService.remove(id);
   }
 }

@@ -1,17 +1,20 @@
-import { IsOptional, IsString } from "class-validator";
+import { IsOptional, IsPhoneNumber, IsString, MaxLength } from "class-validator";
 
 export class CreateTransporterDto {
 
     @IsString()
+    @MaxLength(50)
     name: string;
 
     @IsString()
+    @MaxLength(50)
     lastName: string;
 
-    @IsString()
+    @IsOptional()
+    @IsPhoneNumber()
     phone?: string;
 
     @IsString()
-    transporterId: string;
+    transporter: string;
 
 }

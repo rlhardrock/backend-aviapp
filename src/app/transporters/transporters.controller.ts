@@ -28,7 +28,7 @@ export class TransportersController {
   @Get('transporter/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   findOne(@Param('id') id: string) {
-    return this.transportersService.findOne(+id);
+    return this.transportersService.findOne(id);
   }
 
   // Endpoint para buscar un transportador por su transporterId
@@ -42,13 +42,13 @@ export class TransportersController {
   @Patch('transporter/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(@Param('id') id: string, @Body() updateTransporterDto: UpdateTransporterDto) {
-    return this.transportersService.update(+id, updateTransporterDto);
+    return this.transportersService.update(id, updateTransporterDto);
   }
 
   // Endpoint para eliminar un transportador
   @Delete('transporter/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   remove(@Param('id') id: string) {
-    return this.transportersService.remove(+id);
+    return this.transportersService.remove(id);
   }
 }

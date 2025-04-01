@@ -1,12 +1,12 @@
 export class Professional {
 
-    public id: number;
+    public id: string;
     public sex: string;
-    public licenseId: string;
+    public license: string;
     public name: string;
     public lastName: string;
     public phone: string;
-    public taxpayerId: string;
+    public taxpayer: string;
     public email: string;
     public role: string;
     public status: string;

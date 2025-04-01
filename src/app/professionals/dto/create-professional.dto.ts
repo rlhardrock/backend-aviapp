@@ -6,7 +6,7 @@ export class CreateProfessionalDto {
     sex: string;
     
     @IsString()
-    licenseId: string;
+    license: string;
     
     @IsString()
     name: string;
@@ -18,7 +18,7 @@ export class CreateProfessionalDto {
     phone: string;
     
     @IsString()
-    taxpayerId: string;
+    taxpayer: string;
     
     @IsEmail()
     email: string;

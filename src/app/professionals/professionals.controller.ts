@@ -28,21 +28,21 @@ export class ProfessionalsController {
   @Get('professional/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   findOne(@Param('id') id: string) {
-    return this.professionalsService.findOne(+id);
+    return this.professionalsService.findOne(id);
   }
 
-  // Endpoint para obtener un profesional por taxpayerId
-  @Get('professional/:taxpayerId')
+  // Endpoint para obtener un profesional por taxpayer
+  @Get('professional/:taxpayer')
   /* @UseGuards(AuthGuard('jwt')) */
-  findByTaxpayer(@Param('taxpayerId') taxpayerId: string) {
-    return this.professionalsService.findByTaxpayer(taxpayerId);
+  findByTaxpayer(@Param('taxpayer') taxpayer: string) {
+    return this.professionalsService.findByTaxpayer(taxpayer);
   }
 
-  // Endpoint para obtener un profesional por licenseId
-  @Get('professional/:licenseId')
+  // Endpoint para obtener un profesional por license
+  @Get('professional/:license')
   /*  @UseGuards(AuthGuard('jwt')) */
-  findByLicenseId(@Param('licenseId') licenseId: string) {
-    return this.professionalsService.findByLicenseId(licenseId);
+  findByLicense(@Param('license') license: string) {
+    return this.professionalsService.findByLicense(license);
   }
 
   // Endpoint para obtener todos los profesionales por role
@@ -65,13 +65,13 @@ export class ProfessionalsController {
   @Patch('professional/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(@Param('id') id: string, @Body() updateProfessionalDto: UpdateProfessionalDto) {
-    return this.professionalsService.update(+id, updateProfessionalDto);
+    return this.professionalsService.update(id, updateProfessionalDto);
   }
 
   // Endpoint para eliminar un profesional
   @Delete('professional/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   remove(@Param('id') id: string) {
-    return this.professionalsService.remove(+id);
+    return this.professionalsService.remove(id);
   }
 }

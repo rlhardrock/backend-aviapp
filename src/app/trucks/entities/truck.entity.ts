@@ -1,6 +1,6 @@
 export class Truck {
 
-    public id: number;
+    public id: string;
     public brand: string;
     public model: string;
     public paint: string;

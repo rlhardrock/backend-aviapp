@@ -40,11 +40,16 @@ export class UtilsService {
         formatted = formatted.replace(/([a-zA-Z]+)(\d+)/g, '$1-$2');
         formatted = formatted.replace(/(\d+)([a-zA-Z]+)/g, '$1-$2');
         return formatted;
-     }
+    }
 
      paginateList(page?: number, limit?: number) {
         const safePage = Number.isNaN(Number(page)) || page < 1 ? 1 : Number(page);
         const safeLimit = Number.isNaN(Number(limit)) || limit < 1 ? 10 : Number(limit);
         return { take: safeLimit, skip: (safePage - 1) * safeLimit };
-      }
+    }
+
+    validateUUID(id: string): boolean {
+        const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
+    return regex.test(id);
+  }
 }

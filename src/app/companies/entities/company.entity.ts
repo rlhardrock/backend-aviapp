@@ -1,8 +1,8 @@
 export class Company {
 
-    public id: number;
+    public id: string;
     public name: string;
-    public businessId: string;
+    public business: string;
     public phone: string;
     public email: string;
     public city: string;
