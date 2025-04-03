@@ -2,7 +2,7 @@ export class User {
 
     public id: string;
     public sex: string;
-    public license: string;
+    public licenseSup: string;
     public name: string;
     public lastName: string;
     public phone: string;

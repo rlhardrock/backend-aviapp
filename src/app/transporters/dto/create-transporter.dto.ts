@@ -15,6 +15,6 @@ export class CreateTransporterDto {
     phone?: string;
 
     @IsString()
-    transporter: string;
+    taxpayer: string;
 
 }

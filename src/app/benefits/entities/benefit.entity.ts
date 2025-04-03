@@ -1,43 +1,26 @@
-import { Prisma } from '@prisma/client';
-import { map } from 'rxjs';
+import { Company } from 'src/app/companies/entities/company.entity';
+import { Professional } from 'src/app/professionals/entities/professional.entity';
+import { Transporter } from 'src/app/transporters/entities/transporter.entity';
+import { Truck } from 'src/app/trucks/entities/truck.entity';
+import { User } from 'src/app/users/entities/user.entity';
 
 export class Benefit {
     
-  public  id:                          number;
+  public  id:                          string;
   
-  public  tpSupervisorPlanta:           string;
-  public  idSupervisorPlanta:           string;
-  public  nombreSupervisorPlanta:       string;
-  public  apellidoSupervisorPlanta:     string;
-  
-  public  tpProfesionalPlanta:          string;
-  public  idProfesionalPlanta:          string;
-  public  nombreProfesionalPlanta:      string;
-  public  apellidoProfesionalPlanta:    string;
+  public  licenseSupBef:               string;
+  public  license:                     string;
+  public  placa:                       string;
+  public  business:                    string;
+  public  taxpayer:                    string;
 
-  /* public  tpInspectorSanitario:         string;
-  public  idInspectorSanitario:         string;
-  public  nombreInspectorSanitario:     string;
-  public  apellidoInspectorSanitario:   string; */
-
-  /* public  tpProfesionalGranja:          string;
-  public  idProfesionalGranja:          string;
-  public  nombreProfesionalGranja:      string;
-  public  apellidoProfesionalGranja:    string; */
-
-  public  placa:                        string;
-  public  idConductor:                  string;
-  public  nombreConductor:              string;
-  public  apellidoConductor:            string;
-
-  public  idRemision:                   string;
-  public  idEmpresa:                    string;
-  public  idPlanSanitario:              string;
-  public  regionProcedencia:            string;
-  public  granja:                       string;
-  public  galpon:                       string;
-  public  lineaAves:                    string;
-  public  sexo:                         string;
+  public  idRemision:                  string;
+  public  idPlanSanitario:             string;
+  public  regionProcedencia:           string;
+  public  granja:                      string;
+  public  galpon:                      string;
+  public  lineaAves:                   string;
+  public  sexo:                        string;
   public  edad:                         number;
   public  horaBeneficio:                Date;
   public  turnoBeneficio:               number;
@@ -58,7 +41,6 @@ export class Benefit {
   public  peso1GuacalVacio:             number;
   public  pesoTorre7Guacales:           number;
   public  pesoPromedioAvePlanta:        number;
-  
   public  diferencialPesoGranjaPlanta:  number;
   public  pesoTonLoteProcesada:         number;
   public  canalesObtenidas:             number;
@@ -66,6 +48,13 @@ export class Benefit {
 
   public  createdAt: Date;
   public  updatedAt: Date;
+
+  // Relations
+  public  transporter: Transporter;
+  public  company: Company;
+  public  truck: Truck;
+  public  professional: Professional;
+  public  user: User;
 
   constructor() {
     this.createdAt = new Date();

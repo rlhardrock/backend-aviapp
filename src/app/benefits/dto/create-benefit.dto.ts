@@ -1,140 +1,155 @@
-import { IsDate, IsNumber, IsString } from "class-validator/types/decorator/decorators";
+import { IsDate, IsNumber, IsString, IsNotEmpty, IsPositive } from 'class-validator';
 
 export class CreateBenefitDto {
+    @IsString()
+    @IsNotEmpty()
+    licenseSupBef: string;
 
     @IsString()
-    tpSupervisorPlanta:           string;
+    @IsNotEmpty()
+    license: string;
 
     @IsString()
-    idSupervisorPlanta:           string;
+    @IsNotEmpty()
+    placa: string;
 
     @IsString()
-    nombreSupervisorPlanta:       string;
+    @IsNotEmpty()
+    business: string;
 
     @IsString()
-    apellidoSupervisorPlanta:     string;
-  
-    @IsString()
-    tpProfesionalPlanta:          string;
+    @IsNotEmpty()
+    taxpayer: string;
 
     @IsString()
-    idProfesionalPlanta:          string;
+    @IsNotEmpty()
+    idRemision: string;
 
     @IsString()
-    nombreProfesionalPlanta:      string;
+    @IsNotEmpty()
+    idPlanSanitario: string;
 
     @IsString()
-    apellidoProfesionalPlanta:    string;
-
-    /* @IsString()
-    tpInspectorSanitario:         string;
+    @IsNotEmpty()
+    regionProcedencia: string;
 
     @IsString()
-    idInspectorSanitario:         string;
+    @IsNotEmpty()
+    granja: string;
 
     @IsString()
-    nombreInspectorSanitario:     string;
+    @IsNotEmpty()
+    galpon: string;
 
     @IsString()
-    apellidoInspectorSanitario:   string; */
-
-    /* @IsString()
-    tpProfesionalGranja:          string;
+    @IsNotEmpty()
+    lineaAves: string;
 
     @IsString()
-    idProfesionalGranja:          string;
-
-    @IsString()
-    nombreProfesionalGranja:      string;
-
-    @IsString()
-    apellidoProfesionalGranja:    string; */
-
-    @IsString()
-    placa:                        string;
-
-    @IsString()
-    idConductor:                  string;
-
-    @IsString()
-    nombreConductor:              string;
-
-    @IsString()
-    apellidoConductor:            string;
-
-    @IsString()
-    idRemision:                   string;
-
-    @IsString()
-    idEmpresa:                    string;
-
-    @IsString()
-    idPlanSanitario:              string;
-
-    @IsString()
-    regionProcedencia:            string;
-
-    @IsString()
-    granja:                       string;
-
-    @IsString()
-    galpon:                       string;
-
-    @IsString()
-    lineaAves:                    string;
-
-    @IsString()
-    sexo:                         string;
+    @IsNotEmpty()
+    sexo: string;
 
     @IsNumber()
-    edad:                         number;
+    @IsNotEmpty()
+    @IsPositive()
+    edad: number;
 
     @IsDate()
-    horaBeneficio:                Date;
+    @IsNotEmpty()
+    horaBeneficio: Date;
 
     @IsNumber()
-    turnoBeneficio:               number;
+    @IsNotEmpty()
+    @IsPositive()
+    turnoBeneficio: number;
 
     @IsNumber()
-    pesoPromedioAveGranja:        number;
+    @IsNotEmpty()
+    @IsPositive()
+    pesoPromedioAveGranja: number;
 
     @IsNumber()
-    avesPorGuacal:                number;
+    @IsNotEmpty()
+    @IsPositive()
+    avesPorGuacal: number;
 
     @IsNumber()
-    guacalesVacios:               number;
+    @IsNotEmpty()
+    @IsPositive()
+    guacalesVacios: number;
 
     @IsNumber()
-    guacalesUsados:               number;
+    @IsNotEmpty()
+    @IsPositive()
+    guacalesUsados: number;
 
     @IsNumber()
-    guacalExtra:                  number;
+    @IsNotEmpty()
+    @IsPositive()
+    guacalExtra: number;
 
     @IsNumber()
-    avesRemisionadas:             number;
+    @IsNotEmpty()
+    @IsPositive()
+    avesRemisionadas: number;
 
     @IsNumber()
-    avesEnGuacalExtra:            number;
+    @IsNotEmpty()
+    @IsPositive()
+    avesEnGuacalExtra: number;
 
     @IsNumber()
-    avesColgadas:                 number;
+    @IsNotEmpty()
+    @IsPositive()
+    avesColgadas: number;
 
     @IsNumber()
-    avesAsfixiadas:               number;
+    @IsNotEmpty()
+    @IsPositive()
+    avesAsfixiadas: number;
 
     @IsNumber()
-    canalesDecomisadas:              number;
+    @IsNotEmpty()
+    @IsPositive()
+    canalesDecomisadas: number;
 
     @IsNumber()
-    canalesDestrozadas:              number;
+    @IsNotEmpty()
+    @IsPositive()
+    canalesDestrozadas: number;
 
     @IsNumber()
-    peso1GuacalVacio:             number;
+    @IsNotEmpty()
+    @IsPositive()
+    peso1GuacalVacio: number;
 
     @IsNumber()
-    pesoTorre7Guacales:           number;
+    @IsNotEmpty()
+    @IsPositive()
+    pesoTorre7Guacales: number;
 
     @IsNumber()
-    pesoPromedioAvePlanta:        number;
+    @IsNotEmpty()
+    @IsPositive()
+    pesoPromedioAvePlanta: number;
 
+    @IsNumber()
+    @IsNotEmpty()
+    @IsPositive()
+    diferencialPesoGranjaPlanta: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    @IsPositive()
+    pesoTonLoteProcesada: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    @IsPositive()
+    canalesObtenidas: number;
+
+    @IsNumber()
+    @IsNotEmpty()
+    @IsPositive()
+    diferencialAvesEntrega: number;
 }

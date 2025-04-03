@@ -24,7 +24,7 @@ export class UsersService {
       }
       const formattedUserData = {
         sex: this.utils.capitalizeFirstLetter(createUserDto.sex),
-        license: this.utils.formatString(createUserDto.license),
+        licenseSup: this.utils.formatString(createUserDto.licenseSup),
         name: this.utils.capitalizeFirstLetter(createUserDto.name),
         lastName: this.utils.capitalizeFirstLetter(createUserDto.lastName),
         phone: this.utils.formatPhoneNumber(createUserDto.phone),
@@ -199,10 +199,10 @@ export class UsersService {
   }
 
   // Encuentra un usuario especifico por numero de licencia profesional
-  async findOneLicense(license: string) {
+  async findOneLicense(licenseSup: string) {
     try {
       const user = await this.prisma.user.findUnique({
-        where: { license },
+        where: { licenseSup },
       });
       if (!user) {
         throw new HttpException(
@@ -257,7 +257,7 @@ export class UsersService {
         data: {
           sex: this.utils.capitalizeFirstLetter(updateUserDto.sex),
           name: this.utils.capitalizeFirstLetter(updateUserDto.name),
-          license: this.utils.formatString(updateUserDto.license),
+          licenseSup: this.utils.formatString(updateUserDto.licenseSup),
           lastName: this.utils.capitalizeFirstLetter(updateUserDto.lastName),
           phone: this.utils.formatPhoneNumber(updateUserDto.phone),
           taxpayer: this.utils.formatIdentification(updateUserDto.taxpayer),

@@ -23,5 +23,5 @@ export class UpdateTransporterDto extends PartialType(CreateTransporterDto) {
     @IsOptional()
     @IsString()
     @IsNotEmpty()
-    transporter?: string;
+    taxpayer?: string;
 }

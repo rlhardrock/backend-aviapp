@@ -16,7 +16,7 @@ datasource db {
 model User {
   id         String   @default(uuid())
   sex        String
-  license    String   @id @unique
+  licenseSup String   @id @unique
   name       String
   lastName   String
   phone      String
@@ -48,7 +48,7 @@ model Transporter {
   name          String
   lastName      String
   phone         String
-  transporter   String   @id @unique
+  taxpayer      String   @id @unique
   dateBirth     DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -86,33 +86,13 @@ model Professional {
 model Benefit {
   id                          String   @id @default(uuid())
   
-  tpSupervisorPlanta          String
-  idSupervisorPlanta          String
-  nombreSupervisorPlanta      String
-  apellidoSupervisorPlanta    String
-  
-  tpProfesionalPlanta         String
-  idProfesionalPlanta         String
-  nombreProfesionalPlanta     String
-  apellidoProfesionalPlanta   String
-
-  /* tpInspectorSanitario          String
-  idInspectorSanitario          String
-  nombreInspectorSanitario      String
-  apellidoInspectorSanitario    String */
-
-  /* tpProfesionalGranja         String
-  idProfesionalGranja         String
-  nombreProfesionalGranja     String
-  apellidoProfesionalGranja   String */
-
-  placa                       String
-  idConductor                 String
-  nombreConductor             String
-  apellidoConductor           String
+  licenseSupBef               String  // id unico de usuarios del sistema
+  license                     String  // id unico de profesionales
+  placa                       String  // id unico de camiones
+  business                    String  // id unico de empresas
+  taxpayer                    String  // id unico de conductores
 
   idRemision                  String   @unique
-  idEmpresa                   String
   idPlanSanitario             String
   regionProcedencia           String
   granja                      String
@@ -133,8 +113,8 @@ model Benefit {
 
   avesColgadas                Int @default(0)
   avesAsfixiadas              Int @default(0)
-  avesDecomisadas             Int @default(0)
-  avesDestrozadas             Int @default(0)
+  canalesDecomisadas          Int @default(0)
+  canalesDestrozadas          Int @default(0)
 
   peso1GuacalVacio            Decimal @default(0) @db.Decimal(6,3)
   pesoTorre7Guacales          Decimal @default(0) @db.Decimal(6,3)
@@ -146,11 +126,11 @@ model Benefit {
   createdAt                   DateTime @default(now())
   updatedAt                   DateTime @updatedAt
   
-  user         User         @relation("UserBenefit", fields: [idSupervisorPlanta], references: [license])
+  user         User         @relation("UserBenefit", fields: [licenseSupBef], references: [licenseSup])
   truck        Truck        @relation("TruckBenefit", fields: [placa], references: [plate])
-  transporter  Transporter  @relation("TransporterBenefit", fields: [idConductor], references: [transporter])
-  company      Company      @relation("CompanyBenefit", fields: [idEmpresa], references: [business])
-  professional Professional @relation("ProfessionalBenefit", fields: [tpProfesionalPlanta], references: [license])
+  transporter  Transporter  @relation("TransporterBenefit", fields: [taxpayer], references: [taxpayer])
+  company      Company      @relation("CompanyBenefit", fields: [business], references: [business])
+  professional Professional @relation("ProfessionalBenefit", fields: [license], references: [license])
 
   @@map("benefits")
 }

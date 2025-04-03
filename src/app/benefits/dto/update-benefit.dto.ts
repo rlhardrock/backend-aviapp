@@ -3,185 +3,135 @@ import { CreateBenefitDto } from './create-benefit.dto';
 import { IsDate, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class UpdateBenefitDto extends PartialType(CreateBenefitDto) {
+    @IsOptional()
+    @IsString()
+    licenseSupBef?: string;
 
     @IsOptional()
     @IsString()
-    tpSupervisorPlanta?:           string;
+    license?: string;
 
     @IsOptional()
     @IsString()
-    idSupervisorPlanta?:           string;
+    placa?: string;
 
     @IsOptional()
     @IsString()
-    nombreSupervisorPlanta?:       string;
+    business?: string;
 
     @IsOptional()
     @IsString()
-    apellidoSupervisorPlanta?:     string;
-  
-    @IsOptional()
-    @IsString()
-    tpProfesionalPlanta?:          string;
+    taxpayer?: string;
 
     @IsOptional()
     @IsString()
-    idProfesionalPlanta?:          string;
+    idRemision?: string;
 
     @IsOptional()
     @IsString()
-    nombreProfesionalPlanta?:      string;
+    idPlanSanitario?: string;
 
     @IsOptional()
     @IsString()
-    apellidoProfesionalPlanta?:    string;
-
-    /* @IsOptional()
-    @IsString()
-    tpInspectorSanitario?:         string;
+    regionProcedencia?: string;
 
     @IsOptional()
     @IsString()
-    idInspectorSanitario?:         string;
+    granja?: string;
 
     @IsOptional()
     @IsString()
-    nombreInspectorSanitario?:     string;
+    galpon?: string;
 
     @IsOptional()
     @IsString()
-    apellidoInspectorSanitario?:   string; */
-
-    /* @IsOptional()
-    @IsString()
-    tpProfesionalGranja?:          string;
+    lineaAves?: string;
 
     @IsOptional()
     @IsString()
-    idProfesionalGranja?:          string;
-
-    @IsOptional()
-    @IsString()
-    nombreProfesionalGranja?:      string;
-
-    @IsOptional()
-    @IsString()
-    apellidoProfesionalGranja?:    string; */
-
-    @IsOptional()
-    @IsString()
-    placa?:                        string;
-
-    @IsOptional()
-    @IsString()
-    idConductor?:                  string;
-
-    @IsOptional()
-    @IsString()
-    nombreConductor?:              string;
-
-    @IsOptional()
-    @IsString()
-    apellidoConductor?:            string;
-
-    @IsOptional()
-    @IsString()
-    idRemision?:                   string;
-
-    @IsOptional()
-    @IsString()
-    idEmpresa?:                    string;
-
-    @IsOptional()
-    @IsString()
-    idPlanSanitario?:              string;
-
-    @IsOptional()
-    @IsString()
-    regionProcedencia?:            string;
-
-    @IsOptional()
-    @IsString()
-    granja?:                       string;
-
-    @IsOptional()
-    @IsString()
-    galpon?:                       string;
-
-    @IsOptional()
-    @IsString()
-    lineaAves?:                    string;
-
-    @IsOptional()
-    @IsString()
-    sexo?:                         string;
+    sexo?: string;
 
     @IsOptional()
     @IsNumber()
-    edad?:                         number;
+    edad?: number;
 
     @IsOptional()
     @IsDate()
-    horaBeneficio?:                Date;
+    horaBeneficio?: Date;
 
     @IsOptional()
     @IsNumber()
-    turnoBeneficio?:               number;
+    turnoBeneficio?: number;
 
     @IsOptional()
     @IsNumber()
-    pesoPromedioAveGranja?:        number;
+    pesoPromedioAveGranja?: number;
 
     @IsOptional()
     @IsNumber()
-    avesPorGuacal?:                number;
+    avesPorGuacal?: number;
 
     @IsOptional()
     @IsNumber()
-    guacalesVacios?:               number;
+    guacalesVacios?: number;
 
     @IsOptional()
     @IsNumber()
-    guacalesUsados?:               number;
+    guacalesUsados?: number;
 
     @IsOptional()
     @IsNumber()
-    guacalExtra?:                  number;
+    guacalExtra?: number;
 
     @IsOptional()
     @IsNumber()
-    avesRemisionadas?:             number;
+    avesRemisionadas?: number;
 
     @IsOptional()
     @IsNumber()
-    avesEnGuacalExtra?:            number;
+    avesEnGuacalExtra?: number;
 
     @IsOptional()
     @IsNumber()
-    avesColgadas?:                 number;
+    avesColgadas?: number;
 
     @IsOptional()
     @IsNumber()
-    avesAsfixiadas?:               number;
+    avesAsfixiadas?: number;
 
     @IsOptional()
     @IsNumber()
-    canalesDecomisadas?:              number;
-    
-    @IsOptional()
-    @IsNumber()
-    canalesDestrozadas?:              number;
+    canalesDecomisadas?: number;
 
     @IsOptional()
     @IsNumber()
-    peso1GuacalVacio?:             number;
-    
-    @IsOptional()
-    @IsNumber()
-    pesoTorre7Guacales?:           number;
+    canalesDestrozadas?: number;
 
     @IsOptional()
     @IsNumber()
-    pesoPromedioAvePlanta?:        number;
+    peso1GuacalVacio?: number;
 
+    @IsOptional()
+    @IsNumber()
+    pesoTorre7Guacales?: number;
+
+    @IsOptional()
+    @IsNumber()
+    pesoPromedioAvePlanta?: number;
+
+    @IsOptional()
+    @IsNumber()
+    diferencialPesoGranjaPlanta?: number;
+
+    @IsOptional()
+    @IsNumber()
+    pesoTonLoteProcesada?: number;
+
+    @IsOptional()
+    @IsNumber()
+    canalesObtenidas?: number;
+
+    @IsOptional()
+    @IsNumber()
+    diferencialAvesEntrega?: number;
 }

@@ -6,7 +6,7 @@ export class CreateUserDto {
   sex: string;
 
   @IsString()
-  license: string;
+  licenseSup: string;
 
   @IsString()
   name: string;

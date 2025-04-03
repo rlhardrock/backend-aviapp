@@ -21,7 +21,7 @@ export class TransportersService {
       if (!this.utils.formatPhoneNumber(createTransporterDto.phone)) {
         throw new HttpException('Formato de número de teléfono invalido', HttpStatus.BAD_REQUEST);
       }
-      if (!this.utils.formatIdentification(createTransporterDto.transporter)) {
+      if (!this.utils.formatIdentification(createTransporterDto.taxpayer)) {
         throw new HttpException('Formato de identificación invalido', HttpStatus.BAD_REQUEST);
       }
       const transporter = await this.prisma.transporter.create({
@@ -29,7 +29,7 @@ export class TransportersService {
           name: this.utils.capitalizeFirstLetter(createTransporterDto.name),
           lastName: this.utils.capitalizeFirstLetter(createTransporterDto.lastName),
           phone: this.utils.formatPhoneNumber(createTransporterDto.phone),
-          transporter: this.utils.formatIdentification(createTransporterDto.transporter),
+          taxpayer: this.utils.formatIdentification(createTransporterDto.taxpayer),
         },
       });
       return transporter;
@@ -115,13 +115,13 @@ export class TransportersService {
   }
   
   //  Buscar un transportador por su transporter
-  async findOneTransporter(transporter: string) { 
+  async findOneTransporter(taxpayer: string) { 
     try {
-      if (!transporter || transporter.trim() === '') {
+      if (!taxpayer || taxpayer.trim() === '') {
         throw new HttpException('El ID del transportista es requerido', HttpStatus.BAD_REQUEST);
       }
       const transporterRecord = await this.prisma.transporter.findUnique({
-        where: { transporter }
+        where: { taxpayer }
       });
       if (!transporterRecord) {
         throw new HttpException('Transportista no encontrado', HttpStatus.NOT_FOUND);
@@ -157,7 +157,7 @@ export class TransportersService {
           name: this.utils.capitalizeFirstLetter(updateTransporterDto.name),
           lastName: this.utils.capitalizeFirstLetter(updateTransporterDto.lastName),
           phone: this.utils.formatPhoneNumber(updateTransporterDto.phone),
-          transporter: this.utils.formatIdentification(updateTransporterDto.transporter),
+          taxpayer: this.utils.formatIdentification(updateTransporterDto.taxpayer),
         },
       });
       return updatedTransporter;
