@@ -27,7 +27,7 @@ export class BenefitsController {
   @Get('benefit/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   findOne(@Param('id') id: string) {
-    return this.benefitsService.findOne(+id);
+    return this.benefitsService.findOne(id);
   }
 
   // Endpoint para obtener un benefit por idRemision
@@ -53,12 +53,20 @@ export class BenefitsController {
     return this.benefitsService.findAllByIdEmpresa(idEmpresa, query.page, query.limit);
   } 
 
-  // Endpoint para obtener todos los benefits por tpProfesionalPlanta
-  @Get('benefit/:tpProfesionalPlanta')    
+  // Endpoint para obtener todos los benefits por tuSupervisor (Huesped)
+  @Get('benefit/:tpSupervisor')    
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByTpProfesionalPlanta(@Param('tpProfesionalPlanta') tpProfesionalPlanta: string, @Query() query: PaginationDto) {
-    return this.benefitsService.findAllByTpProfesionalPlanta(tpProfesionalPlanta, query.page, query.limit);
+  findAllByTpSupervisorPlanta(@Param('tpSupervisor') tpSupervisor: string, @Query() query: PaginationDto) {
+    return this.benefitsService.findAllByTpSupervisorPlanta(tpSupervisor, query.page, query.limit);
+  } 
+
+  // Endpoint para obtener todos los benefits por tpProfesional (Invitado)
+  @Get('benefit/:tpProfesional')    
+  @UsePipes(new ValidationPipe({ transform: true }))
+  /* @UseGuards(AuthGuard('jwt')) */
+  findAllByTpProfesionalPlanta(@Param('tpProfesional') tpProfesional: string, @Query() query: PaginationDto) {
+    return this.benefitsService.findAllByTpProfesionalPlanta(tpProfesional, query.page, query.limit);
   } 
 
   // Endpoint para obtener todos los benefits por placa
@@ -81,13 +89,13 @@ export class BenefitsController {
   @Patch('benefit/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(@Param('id') id: string, @Body() updateBenefitDto: UpdateBenefitDto) {
-    return this.benefitsService.update(+id, updateBenefitDto);
+    return this.benefitsService.update(id, updateBenefitDto);
   }
 
   // Endpoint para eliminar un benefit
   @Delete('benefit/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   remove(@Param('id') id: string) {
-    return this.benefitsService.remove(+id);
+    return this.benefitsService.remove(id);
   }
 }

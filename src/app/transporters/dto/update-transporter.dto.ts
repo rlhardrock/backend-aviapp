@@ -17,11 +17,13 @@ export class UpdateTransporterDto extends PartialType(CreateTransporterDto) {
     lastName?: string;
 
     @IsOptional()
-    @IsPhoneNumber()
+    @IsPhoneNumber('CO')
+    @MaxLength(55)
     phone?: string;
 
     @IsOptional()
     @IsString()
     @IsNotEmpty()
+    @MaxLength(25)
     taxpayer?: string;
 }

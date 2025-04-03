@@ -78,12 +78,6 @@ export class BenefitsService {
             createBenefitDto.avesColgadas,
             createBenefitDto.avesAsfixiadas
           ),
-          canalesEnDeuda: this.benefitsFormulas.calculateCanalesEnDeuda(
-            createBenefitDto.avesRemisionadas,
-            createBenefitDto.avesColgadas,
-            createBenefitDto.avesAsfixiadas,
-            createBenefitDto.canalesDecomisadas
-          ),
         },
       });
       return newBenefit;
@@ -208,7 +202,47 @@ export class BenefitsService {
     }
   }
 
-  // listar todos los beneficios por tpProfesionalPlanta
+  // listar todos los beneficios por Supervisor de Planta (Huesped)
+  async findAllByTpSupervisorPlanta(licenseSupBef: string, page: number, limit: number){
+    try {
+      if (!Number.isInteger(page) || page < 1) {
+        throw new BadRequestException('El número de página debe ser un entero positivo.');
+      }
+      if (!Number.isInteger(limit) || limit < 1) {
+        throw new BadRequestException('El límite debe ser un entero positivo mayor a 0.');
+      }
+      const { take, skip } = this.utils.paginateList(page, limit);
+      const [benefits, total] = await Promise.all([
+        this.prisma.benefit.findMany({
+          take,
+          skip,
+          where: { 
+            licenseSupBef:{
+              contains: licenseSupBef.trim(),
+              mode: 'insensitive'
+            },
+          },
+          orderBy: { licenseSupBef: 'asc' },
+        }),
+        this.prisma.benefit.count({ where: { licenseSupBef } }),
+      ]);
+      return {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page * limit < total,
+        hasPrevPage: page > 1,
+        benefits,
+      };
+    } catch (error) {
+      throw new InternalServerErrorException(
+        `Error al obtener los beneficios por tpProfesionalPlanta: ${error.message || 'Error desconocido'}`,
+      );
+    }
+  }
+
+  // listar todos los beneficios por Profesional Planta (Invitado)
   async findAllByTpProfesionalPlanta(license: string, page: number, limit: number) {
     try {
       if (!Number.isInteger(page) || page < 1) {
@@ -428,7 +462,6 @@ export class BenefitsService {
           pesoTonLoteProcesada: this.benefitsFormulas.calculatePesoTonelajeLotePlanta(updateBenefitDto.pesoPromedioAvePlanta, updateBenefitDto.avesColgadas),
           canalesObtenidas: this.benefitsFormulas.calculateCanalesEntregarDelLote(updateBenefitDto.avesColgadas, updateBenefitDto.canalesDecomisadas),
           diferencialAvesEntrega: this.benefitsFormulas.calculateEntregaDelLote(updateBenefitDto.avesRemisionadas, updateBenefitDto.avesColgadas, updateBenefitDto.avesAsfixiadas),
-          canalesEnDeuda: this.benefitsFormulas.calculateCanalesEnDeuda(updateBenefitDto.avesRemisionadas, updateBenefitDto.avesColgadas, updateBenefitDto.avesAsfixiadas, updateBenefitDto.canalesDecomisadas),
         }
       });
       return updatedBenefit;

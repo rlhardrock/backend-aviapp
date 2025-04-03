@@ -1,4 +1,4 @@
-import { IsDate, IsNumber, IsString, IsNotEmpty, IsPositive } from 'class-validator';
+import { IsDate, IsNumber, IsString, IsNotEmpty, IsPositive, MaxLength } from 'class-validator';
 
 export class CreateBenefitDto {
     @IsString()
@@ -23,10 +23,12 @@ export class CreateBenefitDto {
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(25)
     idRemision: string;
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(25)
     idPlanSanitario: string;
 
     @IsString()
@@ -47,6 +49,7 @@ export class CreateBenefitDto {
 
     @IsString()
     @IsNotEmpty()
+    @MaxLength(7)
     sexo: string;
 
     @IsNumber()
