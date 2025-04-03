@@ -1,9 +1,10 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateBenefitDto } from './dto/create-benefit.dto';
 import { UpdateBenefitDto } from './dto/update-benefit.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
 import { BenefitsFormulasService } from './benefits-formulas.service';
+import { PaginationDto } from '../utils/pagination.dto';
 
 @Injectable()
 export class BenefitsService {
@@ -17,14 +18,11 @@ export class BenefitsService {
   // Crear un nuevo benefit
   async create(createBenefitDto: CreateBenefitDto) {
     try {
-      if (!createBenefitDto || Object.keys(createBenefitDto).length === 0) {
-        throw new BadRequestException('El objeto de creación no puede estar vacío.');
-      }
       const existingBenefit = await this.prisma.benefit.findUnique({ 
         where: { idRemision: createBenefitDto.idRemision }
       });
       if (existingBenefit) {
-        throw new ConflictException(`Ya existe un beneficio con idRemision: ${createBenefitDto.idRemision}`);
+        throw new ConflictException(`Ya existe un beneficio con ID Remision: ${createBenefitDto.idRemision}`);
       }
       const newBenefit = await this.prisma.benefit.create({
         data: {
@@ -82,21 +80,19 @@ export class BenefitsService {
       });
       return newBenefit;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al crear el beneficio: ${error.message || 'Error desconocido'}`
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // listar todo los benefits
-  async findAll(page: number, limit: number) {
+  async findAll(paginationDto: PaginationDto) {
     try {
-      if (!Number.isInteger(page) || page < 1) {
-        throw new BadRequestException('El número de página debe ser un entero positivo.');
-      }
-      if (!Number.isInteger(limit) || limit < 1) {
-        throw new BadRequestException('El límite debe ser un entero positivo mayor a 0.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({
@@ -107,6 +103,8 @@ export class BenefitsService {
         this.prisma.benefit.count(),
       ]);
       return {
+        statusCode: HttpStatus.OK,
+        message: 'Lista de Beneficios',
         total,
         page,
         limit,
@@ -116,21 +114,19 @@ export class BenefitsService {
         benefits,
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al obtener los beneficios: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // listar todos los beneficios por idPlanSanitario
-  async findAllByIdPlanSanitario(idPlanSanitario: string, page: number, limit: number) {
+  async findAllByIdPlanSanitario(idPlanSanitario: string, paginationDto: PaginationDto) {
     try {
-      if (!Number.isInteger(page) || page < 1) {
-        throw new BadRequestException('El número de página debe ser un entero positivo.');
-      }
-      if (!Number.isInteger(limit) || limit < 1) {
-        throw new BadRequestException('El límite debe ser un entero positivo mayor a 0.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({
@@ -156,21 +152,19 @@ export class BenefitsService {
         benefits,
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al obtener los beneficios por idPlanSanitario: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // listar todos los beneficios por idEmpresa
-  async findAllByIdEmpresa(business: string, page: number, limit: number) {
+  async findAllByIdEmpresa(business: string, paginationDto: PaginationDto) {
     try {
-      if (!Number.isInteger(page) || page < 1) {
-        throw new BadRequestException('El número de página debe ser un entero positivo.');
-      }
-      if (!Number.isInteger(limit) || limit < 1) {
-        throw new BadRequestException('El límite debe ser un entero positivo mayor a 0.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({
@@ -196,35 +190,33 @@ export class BenefitsService {
         benefits,
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al obtener los beneficios por idEmpresa: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // listar todos los beneficios por Supervisor de Planta (Huesped)
-  async findAllByTpSupervisorPlanta(licenseSupBef: string, page: number, limit: number){
+  async findAllByTpSupervisorPlanta(licenseSup: string, paginationDto: PaginationDto) {
     try {
-      if (!Number.isInteger(page) || page < 1) {
-        throw new BadRequestException('El número de página debe ser un entero positivo.');
-      }
-      if (!Number.isInteger(limit) || limit < 1) {
-        throw new BadRequestException('El límite debe ser un entero positivo mayor a 0.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({
           take,
           skip,
           where: { 
-            licenseSupBef:{
-              contains: licenseSupBef.trim(),
+            licenseSup:{
+              contains: licenseSup.trim(),
               mode: 'insensitive'
             },
           },
-          orderBy: { licenseSupBef: 'asc' },
+          orderBy: { licenseSup: 'asc' },
         }),
-        this.prisma.benefit.count({ where: { licenseSupBef } }),
+        this.prisma.benefit.count({ where: { licenseSup  } }),
       ]);
       return {
         total,
@@ -236,21 +228,19 @@ export class BenefitsService {
         benefits,
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al obtener los beneficios por tpProfesionalPlanta: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // listar todos los beneficios por Profesional Planta (Invitado)
-  async findAllByTpProfesionalPlanta(license: string, page: number, limit: number) {
+  async findAllByTpProfesionalPlanta(license: string, paginationDto: PaginationDto) {
     try {
-      if (!Number.isInteger(page) || page < 1) {
-        throw new BadRequestException('El número de página debe ser un entero positivo.');
-      }
-      if (!Number.isInteger(limit) || limit < 1) {
-        throw new BadRequestException('El límite debe ser un entero positivo mayor a 0.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({
@@ -276,24 +266,19 @@ export class BenefitsService {
         benefits,
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al obtener los beneficios por tpProfesionalPlanta: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // listar todos los benefits por placa
-  async findAllByPlaca(plate: string, page: number, limit: number) {
+  async findAllByPlaca(plate: string, paginationDto: PaginationDto) {
     try {
-      if (!plate || typeof plate !== 'string' || plate.trim().length === 0) {
-        throw new BadRequestException('La placa no puede estar vacía.');
-      }
-      if (!Number.isInteger(page) || page < 1) {
-        throw new BadRequestException('El número de página debe ser un entero positivo.');
-      }
-      if (!Number.isInteger(limit) || limit < 1) {
-        throw new BadRequestException('El límite debe ser un entero positivo mayor a 0.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({
@@ -319,24 +304,19 @@ export class BenefitsService {
         benefits,
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al obtener los beneficios por placa: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // listar todos los benefits por idConductor
-  async findAllByIdConductor(taxpayer: string, page: number, limit: number) {
+  async findAllByIdConductor(taxpayer: string, paginationDto: PaginationDto) {
     try {
-      if (!taxpayer || typeof taxpayer !== 'string') {
-        throw new BadRequestException('El ID del conductor es inválido.');
-      }
-      if (!Number.isInteger(page) || page < 1) {
-        throw new BadRequestException('El número de página debe ser un entero positivo.');
-      }
-      if (!Number.isInteger(limit) || limit < 1) {
-        throw new BadRequestException('El límite debe ser un entero positivo mayor a 0.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({
@@ -362,9 +342,12 @@ export class BenefitsService {
         benefits,
       };
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al obtener los beneficios por conductor: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -382,9 +365,12 @@ export class BenefitsService {
       }
       return benefit;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al obtener el beneficio: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -407,9 +393,12 @@ export class BenefitsService {
       }
       return benefit;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al obtener el beneficio por idRemision: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -466,34 +455,28 @@ export class BenefitsService {
       });
       return updatedBenefit;
     } catch (error) {
-      throw new InternalServerErrorException(
-        `Error al actualizar el beneficio: ${error.message || 'Error desconocido'}`,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
   
   // Eliminar un benefit
   async remove(id: string) {
     try {
-      if (!this.utils.validateUUID(id)) {
-        throw new BadRequestException('Formato UUID invalido');
-      }
-      const existingBenefit = await this.prisma.benefit.findUnique({
-        where: { id },
-      });
-      if (!existingBenefit) {
-        throw new NotFoundException(`No se encontró un beneficio con el ID: ${id}`);
-      }
-      return await this.prisma.benefit.delete({
-        where: { id },
-      });
+      await this.prisma.benefit.delete({ where: { id } });
+      return { message: `Beneficio con ID ${id} eliminado exitosamente` };
     } catch (error) {
-      if (error instanceof BadRequestException || error instanceof NotFoundException) {
-        throw error; // Re-lanza excepciones esperadas
+      if (error instanceof HttpException) {
+        throw error;
       }
-      throw new InternalServerErrorException(
-        `Error al eliminar el beneficio: ${error.message || 'Error desconocido'}`,
-      );
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`El beneficio con ID ${id} no fue encontrado.`);
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 }

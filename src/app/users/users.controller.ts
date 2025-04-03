@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Request, Query, UsePipes, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -12,7 +12,7 @@ export class UsersController {
   // Endpoint para crear un usuario
   @Post('userRegister')
   /* @UseGuards(AuthGuard('jwt')) */
-  async create(@Body() createUserDto: CreateUserDto) {
+  create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
@@ -20,24 +20,24 @@ export class UsersController {
   @Get('userList')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query() query: PaginationDto) {
-    return this.usersService.findAll(query.page, query.limit);
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.usersService.findAll(paginationDto);
   }
 
   // Endpoint para obtener todos los usuarios por rol
-  @Get('userRole/:role')
+  @Get('user/:role')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByRole(@Param('role') role: string, @Query() query: PaginationDto) {
-    return this.usersService.findAllByRole(role, query.page, query.limit);
+  findAllByRole(@Param('role') role: string, @Query() paginationDto: PaginationDto) {
+    return this.usersService.findAllByRole(paginationDto, role);
   }
 
   // Endpoint para obtener todos los usuarios por estado  
-  @Get('userStatus/:status')
+  @Get('user/:status')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByStatus(@Param('status') status: string, @Query() query: PaginationDto) {
-    return this.usersService.findAllByStatus(status, query.page, query.limit);
+  findAllByStatus(@Param('status') status: string, @Query() paginationDto: PaginationDto) {
+    return this.usersService.findAllByStatus(paginationDto, status);
   }
  
   // Endpoint para obtener un usuario por numero de identificacion
@@ -65,16 +65,14 @@ export class UsersController {
   @Patch('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(
-    @Param('id') id: string,
-    @Body() updateUserDto: UpdateUserDto
-  ) {
+    @Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
   
   // Endpoint para eliminar un usuario
   @Delete('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.remove(id);
   }
   

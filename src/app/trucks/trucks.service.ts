@@ -3,6 +3,7 @@ import { CreateTruckDto } from './dto/create-truck.dto';
 import { UpdateTruckDto } from './dto/update-truck.dto';
 import { UtilsService } from '../utils/utils.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { PaginationDto } from '../utils/pagination.dto';
 
 
 @Injectable()
@@ -41,18 +42,19 @@ export class TrucksService {
         truck: newTruck,
       };
     } catch (error) {
-       if (error.code === 'P2002') {
-        throw new ConflictException('Ya existe un camión con los mismos datos.');
-      }
-      throw new InternalServerErrorException('Ocurrió un error al crear el camión.');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Encuentra todos los camiones
-  async findAll(page: number, limit: number) {
+  async findAll(pagination: PaginationDto) {
     try {
-      if (!page || page < 1) throw new BadRequestException('La página debe ser un número entero positivo.');
-      if (!limit || limit < 1) throw new BadRequestException('El limite debe ser un número entero positivo.');
+      const { page, limit } = pagination;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [trucks, total] = await Promise.all([
         this.prisma.truck.findMany({
@@ -63,24 +65,26 @@ export class TrucksService {
         this.prisma.truck.count(),
       ]);
       return {
+        statusCode: HttpStatus.OK,
+        message: 'Lista de camiones',
         total,
         page,
         limit,
         totalPages: Math.ceil(total / limit),
         hasNextPage: page * limit < total,
         hasPrevPage: page > 1,
-        data: trucks
+        trucks,
       };
     } catch (error) {
-      console.error('Error buscando camiones:', error);
-    throw new HttpException(
-      `Error al obtener los camiones: ${error.message || error}`,
-      HttpStatus.INTERNAL_SERVER_ERROR,
-    );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
-
-
+  
   // Encuentra un camión por ID
   async findOne(id: string) {
     if (!id || !this.utils.validateUUID(id)) {
@@ -95,20 +99,18 @@ export class TrucksService {
       }
       return truck;
     } catch (error) {
-      console.error('Error buscando camión por ID:', error);
-    throw new HttpException(
-      `Error al buscar camión con ID ${id}: ${error.message || error}`,
-      error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-    );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Encuentra un camión por placa
   async findOneByPlate(plate: string) {
     try {
-      if (!plate || plate.trim().length === 0) {
-        throw new NotFoundException('La placa debe ser un string válido.');
-      }
       const truck = await this.prisma.truck.findFirst({
         where: { plate: { contains: plate.trim(),  mode: 'insensitive' } },
       });
@@ -117,29 +119,19 @@ export class TrucksService {
       }
       return truck;
     } catch (error) {
-      console.error('Error buscando camión por placa:', error);
-      if (error instanceof NotFoundException) {
-        throw error;
-      }
-      throw new HttpException(
-        `Error al buscar camión por placa: ${error.message || error}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-    );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
   
   // Encuentra todos los camiones por marca
-  async findAllByBrand(brand: string  , page: number, limit: number) {
+  async findAllByBrand(brand: string, paginationDto: PaginationDto) {
     try {
-      if (!brand || typeof brand !== 'string') {
-        throw new BadRequestException('La marca debe ser un string válido.');
-      }
-      if (!page || page < 1 || !Number.isInteger(page)) {
-        throw new BadRequestException('La página debe ser un número entero positivo.');
-      }
-      if (!limit || limit < 1 || !Number.isInteger(limit)) {
-        throw new BadRequestException('El limite debe ser un número entero positivo.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const where = { brand: { equals: brand, mode: 'insensitive' } };
       const [trucks, total] = await Promise.all([
@@ -150,6 +142,8 @@ export class TrucksService {
         throw new NotFoundException(`No se encontraron camiones con la marca ${brand}`);
       }
       return {
+        statusCode: HttpStatus.OK,
+        message: 'Lista de camiones con la marca: ' + brand,
         total,
         page,
         limit,
@@ -159,34 +153,30 @@ export class TrucksService {
         trucks,
       };
     } catch (error) {
-      if (error.code === 'P2002') {
-        throw new BadRequestException('Database constraint violation.');
-      }
-      throw error;
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Encuentra todos los camiones por modelo
-  async findAllByModel(model: string, page: number, limit: number) {
+  async findAllByModel(model: string, paginationDto: PaginationDto) {
     try {
-      if (!model || typeof model !== 'string') {
-        throw new BadRequestException('El modelo debe ser un string válido.');
-      }
-      if (!page || page < 1 || !Number.isInteger(page)) {
-        throw new BadRequestException('La página debe ser un número entero positivo.');
-      }
-      if (!limit || limit < 1 || !Number.isInteger(limit)) {
-        throw new BadRequestException('El limite debe ser un número entero positivo.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const where = {
         model: { equals: model, mode: 'insensitive' },
       };
       const [trucks, total] = await Promise.all([
         this.prisma.truck.findMany({ where, take, skip, orderBy: { createdAt: 'desc' } }),
-      this.prisma.truck.count({ where }),
+        this.prisma.truck.count({ where }),
       ]);
       return {
+        statusCode: HttpStatus.OK,
+        message: 'Lista de camiones con el modelo: ' + model,
         total,
         page,
         limit,
@@ -196,35 +186,28 @@ export class TrucksService {
         trucks,
       };
     } catch (error) {
-      // Manejo de errores de Prisma
-      if (error.code === 'P2002') {
-        throw new BadRequestException('Database constraint violation.');
-      }
-      throw error;
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Encuentra todos los camiones por color
-  async findAllByPaint(paint: string, page: number, limit: number) {
+  async findAllByPaint(paint: string, paginationDto: PaginationDto) {
     try {
-      if (!paint || typeof paint !== 'string') {
-        throw new BadRequestException('El color debe ser un string válido.');
-      }
-      if (!page || page < 1 || !Number.isInteger(page)) {
-        throw new BadRequestException('La página debe ser un número entero positivo.');
-      }
-      if (!limit || limit < 1 || !Number.isInteger(limit)) {
-        throw new BadRequestException('El limite debe ser un número entero positivo.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const where = {
-        paint: { equals: paint, mode: 'insensitive' },
-      };
+      const where = { paint: { equals: paint, mode: 'insensitive' } };
       const [trucks, total] = await Promise.all([
       this.prisma.truck.findMany({ where, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.truck.count({ where }),
       ]);
       return {
+        statusCode: HttpStatus.OK,
+        message: 'Lista de camiones con el color: ' + paint,
         total,
         page,
         limit,
@@ -234,11 +217,12 @@ export class TrucksService {
         trucks,
       };
     } catch (error) {
-      // Manejo de errores de Prisma
-      if (error.code === 'P2002') {
-        throw new BadRequestException('Database constraint violation.');
-      }
-      throw new HttpException(error.message || 'Error interno del servidor', HttpStatus.INTERNAL_SERVER_ERROR);
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -264,34 +248,28 @@ export class TrucksService {
       });
       return updatedTruck;
     } catch (error) {
-      throw new HttpException(
-        `Falla en la actualización del camión: ${error.message || error}`,
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Eliminar un camión existente
   async remove(id: string) {
-    if (!this.utils.validateUUID(id)) {
-      throw new HttpException('El ID proporcionado no es válido.', HttpStatus.BAD_REQUEST);
-    }
     try {
-      const deletedTruck = await this.prisma.truck.delete({
-        where: { id },
-      });
-      if (!deletedTruck) {
-        throw new NotFoundException(`El camión con ID ${id} no fue encontrado.`);
-      }
-      return {
-        message: `Camión con ID ${id} eliminado correctamente.`,
-        data: deletedTruck,
-      };
+      await this.prisma.truck.delete({ where: { id } });
+      return { message: `Camión con ID ${id} eliminado correctamente.` }
     } catch (error) {
-      throw new HttpException(
-        `Falla al eliminar el camión: ${error.message || error}`,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`El camión con ID ${id} no encontrado.`);
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 }

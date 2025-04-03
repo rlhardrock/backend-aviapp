@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ValidationPipe, UsePipes } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ValidationPipe, UsePipes, ParseUUIDPipe } from '@nestjs/common';
 import { BenefitsService } from './benefits.service';
 import { CreateBenefitDto } from './dto/create-benefit.dto';
 import { UpdateBenefitDto } from './dto/update-benefit.dto';
@@ -19,8 +19,8 @@ export class BenefitsController {
   @Get('benefitList')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query() query: PaginationDto) {
-    return this.benefitsService.findAll(query.page, query.limit);
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.benefitsService.findAll(paginationDto);
   } 
 
   // Endpoint para obtener un benefit por id
@@ -41,48 +41,48 @@ export class BenefitsController {
   @Get('benefit/:idPlanSanitario')  
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByIdPlanSanitario(@Param('idPlanSanitario') idPlanSanitario: string, @Query() query: PaginationDto) {
-    return this.benefitsService.findAllByIdPlanSanitario(idPlanSanitario, query.page, query.limit);
+  findAllByIdPlanSanitario(@Param('idPlanSanitario') idPlanSanitario: string, @Query() paginationDto: PaginationDto) {
+    return this.benefitsService.findAllByIdPlanSanitario(idPlanSanitario, paginationDto);
   } 
 
   // Endpoint para obtener todos los benefits por idEmpresa
   @Get('benefit/:idEmpresa')  
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByIdEmpresa(@Param('idEmpresa') idEmpresa: string, @Query() query: PaginationDto) {
-    return this.benefitsService.findAllByIdEmpresa(idEmpresa, query.page, query.limit);
+  findAllByIdEmpresa(@Param('idEmpresa') idEmpresa: string, @Query() paginationDto: PaginationDto) {
+    return this.benefitsService.findAllByIdEmpresa(idEmpresa, paginationDto);
   } 
 
   // Endpoint para obtener todos los benefits por tuSupervisor (Huesped)
   @Get('benefit/:tpSupervisor')    
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByTpSupervisorPlanta(@Param('tpSupervisor') tpSupervisor: string, @Query() query: PaginationDto) {
-    return this.benefitsService.findAllByTpSupervisorPlanta(tpSupervisor, query.page, query.limit);
+  findAllByTpSupervisorPlanta(@Param('tpSupervisor') tpSupervisor: string, @Query() paginationDto: PaginationDto) {
+    return this.benefitsService.findAllByTpSupervisorPlanta(tpSupervisor, paginationDto);
   } 
 
   // Endpoint para obtener todos los benefits por tpProfesional (Invitado)
   @Get('benefit/:tpProfesional')    
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByTpProfesionalPlanta(@Param('tpProfesional') tpProfesional: string, @Query() query: PaginationDto) {
-    return this.benefitsService.findAllByTpProfesionalPlanta(tpProfesional, query.page, query.limit);
+  findAllByTpProfesionalPlanta(@Param('tpProfesional') tpProfesional: string, @Query() paginationDto: PaginationDto) {
+    return this.benefitsService.findAllByTpProfesionalPlanta(tpProfesional, paginationDto);
   } 
 
   // Endpoint para obtener todos los benefits por placa
   @Get('benefit/:placa')  
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByPlaca(@Param('placa') placa: string, @Query() query: PaginationDto) {
-    return this.benefitsService.findAllByPlaca(placa, query.page, query.limit);
+  findAllByPlaca(@Param('placa') placa: string, @Query() paginationDto: PaginationDto) {
+    return this.benefitsService.findAllByPlaca(placa, paginationDto);
   } 
 
   // Endpoint para obtener todos los benefits por idConductor
   @Get('benefit/:idConductor')    
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByIdConductor(@Param('idConductor') idConductor: string, @Query() query: PaginationDto) {
-    return this.benefitsService.findAllByIdConductor(idConductor, query.page, query.limit);
+  findAllByIdConductor(@Param('idConductor') idConductor: string, @Query() paginationDto: PaginationDto) {
+    return this.benefitsService.findAllByIdConductor(idConductor, paginationDto);
   } 
 
   // Endpoint para actualizar un benefit
@@ -95,7 +95,7 @@ export class BenefitsController {
   // Endpoint para eliminar un benefit
   @Delete('benefit/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.benefitsService.remove(id);
   }
 }

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Query, UsePipes, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
 import { ProfessionalsService } from './professionals.service';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
@@ -20,8 +20,8 @@ export class ProfessionalsController {
   @Get('professionalList')
   @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query() query: PaginationDto) {
-    return this.professionalsService.findAll(query.page, query.limit);
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.professionalsService.findAll(paginationDto);
   }
 
   // Endpoint para obtener un profesional por id
@@ -49,16 +49,16 @@ export class ProfessionalsController {
   @Get('professional/:role')
   @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
-  findByRole(@Param('role') role: string, @Query() query: PaginationDto) {
-    return this.professionalsService.findByRole(role, query.page, query.limit);
+  findByRole(@Param('role') role: string, @Query() paginationDto: PaginationDto) {
+    return this.professionalsService.findByRole(role, paginationDto);
   }
 
   // Endpoint para obtener todos los profesionales por status
   @Get('professional/:status')
   @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
-  findByStatus(@Param('status') status: string, @Query() query: PaginationDto) {
-    return this.professionalsService.findByStatus(status, query.page, query.limit);
+  findByStatus(@Param('status') status: string, @Query() paginationDto: PaginationDto) {
+    return this.professionalsService.findByStatus(status, paginationDto);
   }
 
   // Endpoint para actualizar un profesional
@@ -71,7 +71,7 @@ export class ProfessionalsController {
   // Endpoint para eliminar un profesional
   @Delete('professional/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.professionalsService.remove(id);
   }
 }

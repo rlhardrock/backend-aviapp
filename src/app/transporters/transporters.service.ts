@@ -1,8 +1,9 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateTransporterDto } from './dto/create-transporter.dto';
 import { UpdateTransporterDto } from './dto/update-transporter.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
+import { PaginationDto } from '../utils/pagination.dto';
 
 @Injectable()
 export class TransportersService {
@@ -34,23 +35,19 @@ export class TransportersService {
       });
       return transporter;
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      } else {
-        console.error('Error inesperado durante la creación del transportador:', error);
-        throw new HttpException(
-          'Ocurrió un error inesperado al crear el transportador.',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   //  Listar todos los transportadores
-  async findAll(page: number, limit: number) {
+  async findAll(paginationDto: PaginationDto) {
     try {
-      if (!page || page < 1) throw new BadRequestException('La página debe ser un número entero positivo.');
-      if (!limit || limit < 1) throw new BadRequestException('El limite debe ser un número entero positivo.');
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [transporters, total] = await Promise.all([
         this.prisma.transporter.findMany({
@@ -64,6 +61,8 @@ export class TransportersService {
       const hasNextPage = page * limit < total;
       const hasPrevPage = page > 1;
       return {
+        statusCode: HttpStatus.OK,
+        message: 'Lista de conductores',
         total,
         page,
         limit,
@@ -73,12 +72,15 @@ export class TransportersService {
         transporters,
       };
     } catch (error) {
-       throw new HttpException(
-        error.response || 'Error inesperado en el servidor.',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
+
 
   //  Buscar un transportador por su id
   async findOne(id: string) {
@@ -106,11 +108,12 @@ export class TransportersService {
       }
       return transporter;
     } catch (error) {
-      console.error('Error al buscar el transporter:', error);
-      throw new HttpException(
-        'Error interno del servidor, intente nuevamente',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
   
@@ -128,10 +131,12 @@ export class TransportersService {
       }
       return transporterRecord;
     } catch (error) {
-      throw new HttpException(
-        error?.response || 'Error interno del servidor',
-        error?.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -139,13 +144,7 @@ export class TransportersService {
   async update(id: string, updateTransporterDto: UpdateTransporterDto) {
     try {
       if (!this.utils.validateUUID(id)) {
-        throw new BadRequestException('Invalid UUID format');
-      }
-      if (updateTransporterDto.name && updateTransporterDto.name.length > 50) {
-        throw new HttpException('Nombre es demasiado largo. Tamaño maximo de 50 caracteres.', HttpStatus.BAD_REQUEST);
-      }
-      if (updateTransporterDto.lastName && updateTransporterDto.lastName.length > 50) {
-        throw new HttpException('Apellido es demasiado largo. Tamaño maximo de 50 caracteres.', HttpStatus.BAD_REQUEST);
+        throw new BadRequestException('Invalid UUID format'), HttpStatus.BAD_REQUEST;
       }
       const transporterExists = await this.prisma.transporter.findUnique({ where: { id } });
       if (!transporterExists) {
@@ -162,37 +161,28 @@ export class TransportersService {
       });
       return updatedTransporter;
     } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new HttpException(
-        'Ocurrió un error inesperado al actualizar el transportista',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   //  Eliminar un transportador
   async remove(id: string) {
-    if (!this.utils.validateUUID(id)) {
-      throw new HttpException('El ID proporcionado no es válido.', HttpStatus.BAD_REQUEST);
-    }
     try {
-      const transporter = await this.prisma.transporter.delete({
-        where: { id },
-      });
-      if (!transporter) {
-        throw new HttpException(
-          `Transporter con ID ${id} no encontrado`,
-          HttpStatus.NOT_FOUND,
-        );
-      }
-      return { message: 'Transporter eliminado exitosamente' };
+      await this.prisma.transporter.delete({ where: { id } });
+      return { message: `Conductor con ID ${id} eliminado exitosamente` };
     } catch (error) {
-      throw new HttpException(
-        'Error al eliminar el transporter, por favor intente de nuevo',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`El transportista con ID ${id} no encontrado.`);
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 }

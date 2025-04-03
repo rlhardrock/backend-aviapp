@@ -3,6 +3,7 @@ import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
+import { PaginationDto } from '../utils/pagination.dto';
 
 @Injectable()
 export class ProfessionalsService {
@@ -36,18 +37,19 @@ export class ProfessionalsService {
         data: professional,
       };
     } catch (error) {
-      if (error.code === 'P2002') {
-        throw new BadRequestException('El email ya está registrado.');
-      }
-      throw new InternalServerErrorException('Ha ocurrido un error inesperado al crear el profesional.');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Listar todos los profesionales
-  async findAll(page: number, limit: number) {
+  async findAll(paginationDto: PaginationDto) {
     try {
-      if (!page || page < 1) throw new BadRequestException('El número de página debe ser mayor a 0');
-      if (!limit || limit < 1) throw new BadRequestException('El límite debe ser mayor a 0');
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [professionals, total] = await Promise.all([
         this.prisma.professional.findMany({
@@ -58,6 +60,8 @@ export class ProfessionalsService {
         this.prisma.professional.count(),
       ]);
       return {
+        statusCode: HttpStatus.OK,
+        message: 'Lista de profesionales',
         total,
         page,
         limit,
@@ -67,11 +71,12 @@ export class ProfessionalsService {
         professionals,
       };
     } catch (error) {
-      console.error('Error en findAll:', error);
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Ha ocurrido un error inesperado al obtener la lista de profesionales');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -85,15 +90,16 @@ export class ProfessionalsService {
         where: { id },
       });
       if (!professional) {
-        throw new NotFoundException(`Profesional con ID ${id} no encontrado`);
+        throw new NotFoundException(`Profesional no encontrado`);
       }
       return professional;
     } catch (error) {
-      console.error(`Error en encontrar al profesional con el id(${id}):`, error);
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Ha ocurrido un error inesperado al obtener el profesional');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -108,23 +114,19 @@ export class ProfessionalsService {
       }
       return professional;
     } catch (error) {
-      console.error(`Error in ProfessionalsService.findByLicense(${license}):`, error);
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new BadRequestException('Ha ocurrido un error inesperado al buscar el profesional.');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Encontrar todos los profesionales por rol
-  async findByRole(role: string, page: number, limit: number) {
+  async findByRole(role: string, paginationDto: PaginationDto) {
     try {
-      if (!role || typeof role !== 'string') {
-        throw new BadRequestException('El parámetro "role" es obligatorio y debe ser un string válido.');
-      }
-      if (!page || page < 1 || !limit || limit < 1) {
-        throw new BadRequestException('Los parámetros "page" y "limit" deben ser números enteros mayores a 0.');
-      }
+      const { page, limit} = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [professionals, total] = await Promise.all([
         this.prisma.professional.findMany({
@@ -136,9 +138,11 @@ export class ProfessionalsService {
         this.prisma.professional.count({ where: { role } }),
       ]);
       if (total === 0) {
-        throw new HttpException('No hay profesionales encontrados para el rol proporcionado', HttpStatus.NOT_FOUND);
+        throw new HttpException(`No se encontraron profesionales con el rol "${role}".`, HttpStatus.NOT_FOUND);
       }
       return {
+        statusCode: HttpStatus.OK,
+        message: `Lista de profesionales con el rol ${role}`,
         total,
         page,
         limit,
@@ -148,20 +152,19 @@ export class ProfessionalsService {
         professionals,
       };
     } catch (error) {
-      console.error('Error buscando profesional por rol:', error);
-      throw new HttpException(error.message || 'Internal Server Error', error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Encontrar todos los profesionales por status
-  async findByStatus(status: string, page: number, limit: number) {
+  async findByStatus(status: string, paginationDto: PaginationDto) {
     try {
-      if (!status || typeof status !== 'string') {
-        throw new BadRequestException('El parámetro "status" es obligatorio y debe ser un string válido.');
-      }
-      if (!page || page < 1 || !limit || limit < 1) {
-        throw new BadRequestException('Los parámetros "page" y "limit" deben ser números enteros mayores a 0.');
-      }
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [professionals, total] = await Promise.all([
         this.prisma.professional.findMany({
@@ -176,6 +179,8 @@ export class ProfessionalsService {
         throw new NotFoundException(`No se encontraron profesionales con el estado "${status}".`);
       }
       return {
+        statusCode: HttpStatus.OK,
+        message: `Lista de profesionales con el estado ${status}`,
         total,
         page,
         limit,
@@ -185,11 +190,12 @@ export class ProfessionalsService {
         professionals,
       };
     } catch (error) {
-      if (error instanceof BadRequestException || error instanceof NotFoundException) {
-        throw error;
-      }
-      console.error('Error en findByStatus:', error);
-      throw new InternalServerErrorException('Ha ocurrido un error mientras se buscaba el profesional');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -204,7 +210,12 @@ export class ProfessionalsService {
       }
       return transporter;
     } catch (error) {
-      throw new InternalServerErrorException('Ha ocurrido un error mientras se buscaba el profesional');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -239,31 +250,27 @@ export class ProfessionalsService {
         data: updatedProfessional,
       };
     } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException(`Profesional con ID ${id} no encontrado`);
-      }
-      console.error('Update error:', error);
-      throw new InternalServerErrorException('Ha ocurrido un error mientras se actualizada el profesional');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   async remove(id: string) {
     try {
-      if (!this.utils.validateUUID(id)) {
-        throw new BadRequestException(`ID inválido: ${id}. Debe ser un UUID válido.`);
-      }
-      const professional = await this.prisma.professional.findUnique({
-        where: { id },
-      });
-      if (!professional) {
-        throw new NotFoundException(`Profesional con ID ${id} no encontrado.`);
-      }
-      return await this.prisma.professional.delete({ where: { id } });
+      await this.prisma.professional.delete({ where: { id } });
+      return { message: `Profesional con ID ${id} eliminado exitosamente` };
     } catch (error) {
-      if (error instanceof NotFoundException || error instanceof BadRequestException) {
+      if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(`Error eliminando profesional con ID ${id}.`);
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`El profesional con ID ${id} no encontrado.`);
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 }

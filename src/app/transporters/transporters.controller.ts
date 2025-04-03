@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, UsePipes, ValidationPipe, ParseUUIDPipe } from '@nestjs/common';
 import { TransportersService } from './transporters.service';
 import { CreateTransporterDto } from './dto/create-transporter.dto';
 import { UpdateTransporterDto } from './dto/update-transporter.dto';
@@ -20,8 +20,8 @@ export class TransportersController {
   @Get('transporterList') 
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query() query: PaginationDto) {
-    return this.transportersService.findAll(query.page, query.limit);
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.transportersService.findAll(paginationDto);
   }
 
   // Endpoint para buscar un transportador por su id
@@ -32,10 +32,10 @@ export class TransportersController {
   }
 
   // Endpoint para buscar un transportador por su transporterId
-  @Get('transporter/:transporterId')
+  @Get('transporter/:taxpayer')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOneTransporter(@Param('transporterId') transporterId: string) {
-    return this.transportersService.findOneTransporter(transporterId);
+  findOneTransporter(@Param('taxpayer') taxpayer: string) {
+    return this.transportersService.findOneTransporter(taxpayer);
   }
 
   // Endpoint para actualizar un transportador
@@ -48,7 +48,7 @@ export class TransportersController {
   // Endpoint para eliminar un transportador
   @Delete('transporter/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.transportersService.remove(id);
   }
 }

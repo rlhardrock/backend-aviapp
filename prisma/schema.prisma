@@ -86,7 +86,7 @@ model Professional {
 model Benefit {
   id                          String   @id @default(uuid())
   
-  licenseSupBef               String  // id unico de usuarios del sistema
+  licenseSup                  String  // id unico de usuarios del sistema
   license                     String  // id unico de profesionales
   placa                       String  // id unico de camiones
   business                    String  // id unico de empresas
@@ -126,7 +126,7 @@ model Benefit {
   createdAt                   DateTime @default(now())
   updatedAt                   DateTime @updatedAt
   
-  user         User         @relation("UserBenefit", fields: [licenseSupBef], references: [licenseSup])
+  user         User         @relation("UserBenefit", fields: [licenseSup], references: [licenseSup])
   truck        Truck        @relation("TruckBenefit", fields: [placa], references: [plate])
   transporter  Transporter  @relation("TransporterBenefit", fields: [taxpayer], references: [taxpayer])
   company      Company      @relation("CompanyBenefit", fields: [business], references: [business])

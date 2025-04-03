@@ -42,10 +42,16 @@ export class UtilsService {
         return formatted;
     }
 
-     paginateList(page?: number, limit?: number) {
+    /* paginateList(page?: number, limit?: number) {
         const safePage = Number.isNaN(Number(page)) || page < 1 ? 1 : Number(page);
         const safeLimit = Number.isNaN(Number(limit)) || limit < 1 ? 10 : Number(limit);
         return { take: safeLimit, skip: (safePage - 1) * safeLimit };
+    } */
+
+    paginateList(page: number, limit: number) {
+        const take = limit;
+        const skip = (page - 1) * take;
+        return { take, skip };
     }
 
     validateUUID(id: string): boolean {

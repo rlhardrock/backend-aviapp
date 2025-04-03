@@ -3,6 +3,7 @@ import { CreateCompanyDto } from './dto/create-company.dto';
 import { UpdateCompanyDto } from './dto/update-company.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
+import { PaginationDto } from '../utils/pagination.dto';
 
 
 @Injectable()
@@ -30,24 +31,27 @@ export class CompaniesService {
         company,
       };
     } catch (error) {
-      if (error instanceof BadRequestException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Ha ocurrido un error al crear la empresa.');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Listar todos los empresas
-  async findAll(page: number, limit: number) {
+  async findAll(paginationDto: PaginationDto) {
     try {
-      if (!page || page < 1) throw new BadRequestException('La página debe ser un número entero positivo.');
-      if (!limit || limit < 1) throw new BadRequestException('El limite debe ser un número entero positivo.');
+      const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [companies, total] = await Promise.all([
-        this.prisma.company.findMany({ take, skip, orderBy: { id: 'asc' } }),
+        this.prisma.company.findMany({ take, skip, orderBy: { name: 'asc' } }),
         this.prisma.company.count(),
       ]);
       return {
+        statusCode: HttpStatus.OK,
+        message: 'Lista de Empresas',
         total,
         page,
         limit,
@@ -57,8 +61,12 @@ export class CompaniesService {
         companies,
       };
     } catch (error) {
-      console.error('Error en listar todas las empresas:', error);
-      throw new HttpException('Ha ocurrido un error al listar todas las empresas', HttpStatus.INTERNAL_SERVER_ERROR);
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -72,11 +80,16 @@ export class CompaniesService {
         where: { id },
       });
       if (!company) {
-        throw new NotFoundException(`Company with ID ${id} not found`);
+        throw new NotFoundException(`Empresa no encontrada`);
       }
       return company;
     } catch (error) {
-      throw error;
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -84,12 +97,9 @@ export class CompaniesService {
   async findByName(name: string) {
     try {
       if (!name || name.trim().length < 3) {
-        throw new HttpException(
-          'El nombre debe tener al menos 3 caracteres',
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new HttpException('El nombre debe tener al menos 3 caracteres', HttpStatus.BAD_REQUEST);
       }
-        const company = await this.prisma.company.findMany({
+      const company = await this.prisma.company.findMany({
         where: {
           name: {
             contains: name.trim(),
@@ -105,10 +115,12 @@ export class CompaniesService {
       }
       return company;
     } catch (error) {
-      throw new HttpException(
-        error.message || 'Error interno en el servidor',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
@@ -116,12 +128,12 @@ export class CompaniesService {
   async findByBusiness(business: string) {
     try {
       if (!business || business.trim() === '') {
-        throw new BadRequestException('El business es obligatorio.');
+        throw new BadRequestException('El ID de la empresa es obligatorio.');
       }
       const company = await this.prisma.company.findFirst({
         where: {
           business: {
-            contains: business,
+            contains: business.trim(),
             mode: 'insensitive',
           },
         },
@@ -131,8 +143,12 @@ export class CompaniesService {
       }
       return company;
     } catch (error) {
-      console.error('Error en findByBusiness:', error);
-      throw new InternalServerErrorException('Ha ocurrido un error mientras se buscaba la empresa.');
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   } 
 
@@ -164,38 +180,28 @@ export class CompaniesService {
         data: updatedCompany,
       };
     } catch (error) {
-      console.error('Error actualizando empresa:', error);
-      if (error.code === 'P2025') {
-        throw new HttpException(
-          'No se encontró la empresa para actualizar',
-          HttpStatus.NOT_FOUND
-        );
-      }
-      throw new HttpException(
-        'Error interno del servidor',
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
+      throw new HttpException({ 
+        statusCode: status, 
+        message 
+      }, status);
     }
   }
 
   // Eliminar un empresa
   async remove(id: string) {
-    if (!this.utils.validateUUID(id)) {
-      throw new BadRequestException('Formato UUID invalido');
-    }
     try {
-      const existingCompany = await this.prisma.company.findUnique({
-        where: { id },
-      });
-      if (!existingCompany) {
-        throw new NotFoundException(`Compañia con el ID ${id} no fue encontrada.`);
-      }
-      return await this.prisma.company.delete({ where: { id } });
+      await this.prisma.company.delete({ where: { id } });
+      return { message: `Compañia con ID ${id} eliminada exitosamente` };
     } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException(`Compañia con el ID ${id} no fue encontrada.`);
+      if (error instanceof HttpException) {
+        throw error;
       }
-      throw new InternalServerErrorException('Ha ocurrido un error al eliminar la empresa.');
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`La compania con ID ${id} no fue encontrada.`);
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 }
