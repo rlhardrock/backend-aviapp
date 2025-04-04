@@ -11,7 +11,7 @@ export class TransportersController {
 
   // Endpoint para crear un nuevo transportador
   @Post('transporterRegister')
- /* @UseGuards(AuthGuard('jwt')) */
+  /* @UseGuards(AuthGuard('jwt')) */
   create(@Body() createTransporterDto: CreateTransporterDto) {
     return this.transportersService.create(createTransporterDto);
   }
@@ -27,7 +27,7 @@ export class TransportersController {
   // Endpoint para buscar un transportador por su id
   @Get('transporter/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.transportersService.findOne(id);
   }
 
@@ -41,7 +41,7 @@ export class TransportersController {
   // Endpoint para actualizar un transportador
   @Patch('transporter/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  update(@Param('id') id: string, @Body() updateTransporterDto: UpdateTransporterDto) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateTransporterDto: UpdateTransporterDto) {
     return this.transportersService.update(id, updateTransporterDto);
   }
 

@@ -1,4 +1,4 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateTransporterDto } from './dto/create-transporter.dto';
 import { UpdateTransporterDto } from './dto/update-transporter.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -16,16 +16,12 @@ export class TransportersService {
   //  Crear un nuevo transportador
   async create(createTransporterDto: CreateTransporterDto) {
     try {
-      if (typeof createTransporterDto.name !== 'string' || typeof createTransporterDto.lastName !== 'string') {
-        throw new HttpException('Nombre y Apellido deben ser strings validos', HttpStatus.BAD_REQUEST);
+      const taxpayer = this.utils.formatIdentification(createTransporterDto.taxpayer);
+      const existingTransporter = await this.prisma.transporter.findFirst({ where: { taxpayer } });
+      if (existingTransporter) {
+        throw new ConflictException(`La identificación del transportador ${taxpayer} ya está registrado.`);
       }
-      if (!this.utils.formatPhoneNumber(createTransporterDto.phone)) {
-        throw new HttpException('Formato de número de teléfono invalido', HttpStatus.BAD_REQUEST);
-      }
-      if (!this.utils.formatIdentification(createTransporterDto.taxpayer)) {
-        throw new HttpException('Formato de identificación invalido', HttpStatus.BAD_REQUEST);
-      }
-      const transporter = await this.prisma.transporter.create({
+      const formattedTransporterData = await this.prisma.transporter.create({
         data: {
           name: this.utils.capitalizeFirstLetter(createTransporterDto.name),
           lastName: this.utils.capitalizeFirstLetter(createTransporterDto.lastName),
@@ -33,14 +29,21 @@ export class TransportersService {
           taxpayer: this.utils.formatIdentification(createTransporterDto.taxpayer),
         },
       });
-      return transporter;
+      const newTransporter = await this.prisma.user.create({
+        data: {
+          formattedTransporterData
+        },
+      });
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Transportador creado con exito.',
+        newTransporter,
+      };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado al crear el transportador.');
     }
   }
 
@@ -50,102 +53,68 @@ export class TransportersService {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [transporters, total] = await Promise.all([
-        this.prisma.transporter.findMany({
-          take,
-          skip,
-          orderBy: { lastName: 'asc' },
-        }),
+        this.prisma.transporter.findMany({ take, skip, orderBy: { lastName: 'asc' }}),
         this.prisma.transporter.count(),
       ]);
-      const totalPages = Math.ceil(total / limit);
-      const hasNextPage = page * limit < total;
-      const hasPrevPage = page > 1;
+      if (total === 0) {
+        throw new NotFoundException('No se encontraron conductores');
+      }
       return {
         statusCode: HttpStatus.OK,
         message: 'Lista de conductores',
         total,
         page,
         limit,
-        totalPages,
-        hasNextPage,
-        hasPrevPage,
+        totalPages: Math.ceil(total / limit),
+        hasNextPage: page * limit < total,
+        hasPrevPage: page > 1,
         transporters,
       };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
 
   //  Buscar un transportador por su id
   async findOne(id: string) {
-    if (!id) {
-      throw new HttpException(
-        'El ID es obligatorio',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-    if (!this.utils.validateUUID(id)) {
-      throw new HttpException(
-        'El ID proporcionado no es válido',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
     try {
-      const transporter = await this.prisma.transporter.findUnique({
-        where: { id },
-      });
+      const transporter = await this.prisma.transporter.findUnique({ where: { id } });
       if (!transporter) {
-        throw new HttpException(
-          `Transportista con ID ${id} no encontrado`,
-          HttpStatus.NOT_FOUND,
-        );
+        throw new NotFoundException(`Transportador con ID ${id} no encontrado.`);
       }
       return transporter;
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
   
   //  Buscar un transportador por su transporter
   async findOneTransporter(taxpayer: string) { 
     try {
-      if (!taxpayer || taxpayer.trim() === '') {
-        throw new HttpException('El ID del transportista es requerido', HttpStatus.BAD_REQUEST);
+      const normalizedTaxpayer = this.utils.formatIdentification(taxpayer);
+      const transporter = await this.prisma.transporter.findFirst({ where: { taxpayer: { contains: normalizedTaxpayer.trim(),  mode: 'insensitive' } }});
+      if (!transporter) {
+        throw new NotFoundException(`Transportador con ID ${taxpayer} no encontrado.`);
       }
-      const transporterRecord = await this.prisma.transporter.findUnique({
-        where: { taxpayer }
-      });
-      if (!transporterRecord) {
-        throw new HttpException('Transportista no encontrado', HttpStatus.NOT_FOUND);
-      }
-      return transporterRecord;
+      return transporter;
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
   //  Actualizar un transportador
   async update(id: string, updateTransporterDto: UpdateTransporterDto) {
     try {
-      if (!this.utils.validateUUID(id)) {
-        throw new BadRequestException('Invalid UUID format'), HttpStatus.BAD_REQUEST;
-      }
       const transporterExists = await this.prisma.transporter.findUnique({ where: { id } });
       if (!transporterExists) {
         throw new HttpException('Transportista no encontrado', HttpStatus.NOT_FOUND);
@@ -161,12 +130,13 @@ export class TransportersService {
       });
       return updatedTransporter;
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Registro con ID ${id} no encontrado.`);
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 

@@ -57,15 +57,14 @@ export class UsersController {
   // Endpoint para obtener un usuario por id
   @Get('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.findOne(id);
   }
 
   // Endpoint para actualizar un usuario
   @Patch('user/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  update(
-    @Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
   

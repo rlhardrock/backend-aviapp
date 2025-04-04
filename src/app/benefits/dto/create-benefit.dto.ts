@@ -3,7 +3,7 @@ import { IsDate, IsNumber, IsString, IsNotEmpty, IsPositive, MaxLength } from 'c
 export class CreateBenefitDto {
     @IsString()
     @IsNotEmpty()
-    licenseSupBef: string;
+    licenseSup: string;
 
     @IsString()
     @IsNotEmpty()

@@ -6,7 +6,7 @@ export class UpdateBenefitDto extends PartialType(CreateBenefitDto) {
     @IsOptional()
     @IsString()
     @MaxLength(25)
-    licenseSupBef?: string;
+    licenseSup?: string;
 
     @IsOptional()
     @IsString()

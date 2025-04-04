@@ -27,7 +27,7 @@ export class ProfessionalsController {
   // Endpoint para obtener un profesional por id
   @Get('professional/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.professionalsService.findOne(id);
   }
 
@@ -50,21 +50,21 @@ export class ProfessionalsController {
   @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
   findByRole(@Param('role') role: string, @Query() paginationDto: PaginationDto) {
-    return this.professionalsService.findByRole(role, paginationDto);
+    return this.professionalsService.findByRole(paginationDto, role);
   }
 
   // Endpoint para obtener todos los profesionales por status
   @Get('professional/:status')
   @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
-  findByStatus(@Param('status') status: string, @Query() paginationDto: PaginationDto) {
-    return this.professionalsService.findByStatus(status, paginationDto);
+  findByStatus(@Query() paginationDto: PaginationDto, @Param('status') status: string) {
+    return this.professionalsService.findByStatus(paginationDto, status);
   }
 
   // Endpoint para actualizar un profesional
   @Patch('professional/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  update(@Param('id') id: string, @Body() updateProfessionalDto: UpdateProfessionalDto) {
+  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateProfessionalDto: UpdateProfessionalDto) {
     return this.professionalsService.update(id, updateProfessionalDto);
   }
 

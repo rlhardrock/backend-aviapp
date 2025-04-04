@@ -27,7 +27,7 @@ export class TrucksController {
   // Endpoints para buscar camiones por ID
   @Get('truck/:id')
   /* @UseGuards(AuthGuard('jwt')) */
-  async findOne(@Param('id') id: string) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.trucksService.findOne(id);
   }
 
@@ -66,10 +66,7 @@ export class TrucksController {
   @Patch('truck/:id')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  async update(
-    @Param('id') id: string, 
-    @Body() updateTruckDto: UpdateTruckDto
-  ) {
+  async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateTruckDto: UpdateTruckDto) {
     return this.trucksService.update(id, updateTruckDto);
   }
     

@@ -4,6 +4,7 @@ import { UpdateTruckDto } from './dto/update-truck.dto';
 import { UtilsService } from '../utils/utils.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationDto } from '../utils/pagination.dto';
+import { contains } from 'class-validator';
 
 
 @Injectable()
@@ -13,21 +14,21 @@ export class TrucksService {
     private prisma: PrismaService,
     private utils: UtilsService,
   ) {}
-
+  
   // Crear un nuevo camión
   async create(createTruckDto: CreateTruckDto) {
     try {
-      const existingTruck = await this.prisma.truck.findUnique({
-        where: { plate: createTruckDto.plate },
+      const existingTruck = this.utils.formatString(createTruckDto.plate);
+      const truck = await this.prisma.truck.findFirst({where: { plate: { contains: existingTruck.trim(),  mode: 'insensitive' } },
       });
-      if (existingTruck) {
+      if (truck) {
         throw new ConflictException(`El camión con placa ${createTruckDto.plate} ya existe.`);
       }
       const currentYear = new Date().getFullYear();
       if (createTruckDto.year < 1950 || createTruckDto.year > currentYear) {
         throw new BadRequestException(`El año ${createTruckDto.year} no es válido.`);
       }
-      const newTruck = await this.prisma.truck.create({
+      const formattedTruckData = await this.prisma.truck.create({
         data: {
           brand: this.utils.capitalizeFirstLetter(createTruckDto.brand),
           model: this.utils.capitalizeFirstLetter(createTruckDto.model),
@@ -37,17 +38,21 @@ export class TrucksService {
           trailer: this.utils.capitalizeFirstLetter(createTruckDto.trailer),
         },
       });
+      const newTruck = await this.prisma.truck.create({
+        data:{
+          formattedTruckData
+        }
+      });
       return {
-        message: 'Camión creado con éxito',
-        truck: newTruck,
+        statusCode: HttpStatus.CREATED,
+        message: 'Camión creado con éxito.',
+        newTruck,
       };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado al crear el camión.');
     }
   }
 
@@ -57,13 +62,12 @@ export class TrucksService {
       const { page, limit } = pagination;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [trucks, total] = await Promise.all([
-        this.prisma.truck.findMany({
-          take,
-          skip,
-          orderBy: { createdAt: 'desc' },
-        }),
+        this.prisma.truck.findMany({ take, skip, orderBy: { createdAt: 'desc' } }),
         this.prisma.truck.count(),
       ]);
+      if (total === 0) {
+        throw new NotFoundException('No se encontraron camiones');
+      }
       return {
         statusCode: HttpStatus.OK,
         message: 'Lista de camiones',
@@ -76,55 +80,44 @@ export class TrucksService {
         trucks,
       };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
   
   // Encuentra un camión por ID
   async findOne(id: string) {
-    if (!id || !this.utils.validateUUID(id)) {
-      throw new BadRequestException('El ID debe ser un UUID válido.');
-    }
     try {
-      const truck = await this.prisma.truck.findUnique({
-        where: { id },
-      });
+      const truck = await this.prisma.truck.findUnique({ where: { id } });
       if (!truck) {
         throw new NotFoundException(`Camión con ID ${id} no encontrado.`);
       }
       return truck;
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
   // Encuentra un camión por placa
   async findOneByPlate(plate: string) {
     try {
-      const truck = await this.prisma.truck.findFirst({
-        where: { plate: { contains: plate.trim(),  mode: 'insensitive' } },
+      const normalizedTruck = this.utils.formatString(plate);
+      const truck = await this.prisma.truck.findFirst({where: { plate: { contains: normalizedTruck.trim(),  mode: 'insensitive' } },
       });
       if (!truck) {
         throw new NotFoundException(`No se encontró un camión con la placa: ${plate}`);
       }
       return truck;
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
   
@@ -133,17 +126,17 @@ export class TrucksService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const where = { brand: { equals: brand, mode: 'insensitive' } };
+      const brandFilter = { contains: brand.trim(), mode: 'insensitive' };
       const [trucks, total] = await Promise.all([
-        this.prisma.truck.findMany({ where, take, skip, orderBy: { createdAt: 'desc' } }),
-        this.prisma.truck.count({ where }),
+        this.prisma.truck.findMany({ where: { brand: brandFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
+        this.prisma.truck.count({ where: { brand: brandFilter } }),
       ]);
       if ( total === 0 ) {
         throw new NotFoundException(`No se encontraron camiones con la marca ${brand}`);
       }
       return {
         statusCode: HttpStatus.OK,
-        message: 'Lista de camiones con la marca: ' + brand,
+        message: `Lista de camiones con la marca ${brand}`,
         total,
         page,
         limit,
@@ -153,12 +146,10 @@ export class TrucksService {
         trucks,
       };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
@@ -167,16 +158,17 @@ export class TrucksService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const where = {
-        model: { equals: model, mode: 'insensitive' },
-      };
+      const modelFilter = { contains: model.trim(), mode: 'insensitive' };
       const [trucks, total] = await Promise.all([
-        this.prisma.truck.findMany({ where, take, skip, orderBy: { createdAt: 'desc' } }),
-        this.prisma.truck.count({ where }),
+        this.prisma.truck.findMany({ where: { model: modelFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
+        this.prisma.truck.count({ where: { model: modelFilter } }),
       ]);
+      if (total === 0) {
+        throw new NotFoundException(`No se encontraron camiones con el modelo: ${model}`);
+      }
       return {
         statusCode: HttpStatus.OK,
-        message: 'Lista de camiones con el modelo: ' + model,
+        message: `Lista de camiones con el modelo ${model}`,
         total,
         page,
         limit,
@@ -186,12 +178,10 @@ export class TrucksService {
         trucks,
       };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
@@ -200,14 +190,17 @@ export class TrucksService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const where = { paint: { equals: paint, mode: 'insensitive' } };
+      const paintFilter = { contains: paint.trim(), mode: 'insensitive' };
       const [trucks, total] = await Promise.all([
-      this.prisma.truck.findMany({ where, take, skip, orderBy: { createdAt: 'desc' } }),
-      this.prisma.truck.count({ where }),
+      this.prisma.truck.findMany({ where: { paint: paintFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
+      this.prisma.truck.count({ where: { paint: paintFilter } }),
       ]);
+      if (total === 0) {
+        throw new NotFoundException(`No se encontraron camiones con el color: ${paint}`);
+      }
       return {
         statusCode: HttpStatus.OK,
-        message: 'Lista de camiones con el color: ' + paint,
+        message: `Lista de camiones con el color: ${paint}`,
         total,
         page,
         limit,
@@ -217,24 +210,20 @@ export class TrucksService {
         trucks,
       };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
   // Actualizar un camión existente
   async update(id: string, updateTruckDto: UpdateTruckDto) {
-    if (!this.utils.validateUUID(id)) {
-      throw new BadRequestException('Invalid UUID format');
-    }
-    if (!updateTruckDto.brand || !updateTruckDto.model || !updateTruckDto.paint || !updateTruckDto.year || !updateTruckDto.plate) {
-      throw new BadRequestException('Faltan campos obligatorios');
-    }
     try {
+      const existingTruck = await this.prisma.truck.findUnique({ where: { id } });
+      if (!existingTruck) {
+        throw new HttpException('Camión no encontrado', HttpStatus.NOT_FOUND);
+      }
       const updatedTruck = await this.prisma.truck.update({
         where: { id },
         data: {
@@ -248,12 +237,13 @@ export class TrucksService {
       });
       return updatedTruck;
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Registro con ID ${id} no encontrado.`);
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 

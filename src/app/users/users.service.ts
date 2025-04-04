@@ -1,10 +1,10 @@
-import { BadRequestException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PaginationDto } from '../utils/pagination.dto';
+import { contains } from 'class-validator';
 @Injectable()
 export class UsersService {
  
@@ -12,15 +12,14 @@ export class UsersService {
     private prisma: PrismaService,
     private utils: UtilsService,
   ) {}
-
+  
   // Crear un nuevo usuario
   async create(createUserDto: CreateUserDto) {
     try {
-      const existingUser = await this.prisma.user.findUnique({
-        where: { email: createUserDto.email.toLowerCase() },
-      });
+      const email = createUserDto.email.toLowerCase();
+      const existingUser = await this.prisma.user.findUnique({ where: { email } });
       if (existingUser) {
-        throw new HttpException('Email ya existe.', HttpStatus.CONFLICT);
+        throw new ConflictException(`El correo ${email} ya está registrado.`);
       }
       const formattedUserData = {
         sex: this.utils.capitalizeFirstLetter(createUserDto.sex),
@@ -36,16 +35,20 @@ export class UsersService {
         dateBirth: createUserDto.dateBirth,
       };
       const newUser = await this.prisma.user.create({
-        data: formattedUserData,
+        data: {
+          formattedUserData
+        },
       });
-      return newUser;
+      return {
+        statusCode: HttpStatus.CREATED,
+        message: 'Usuario creado con exito.',
+        data: newUser,
+      };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado al crear el usuario.');
     }
   }
 
@@ -55,15 +58,11 @@ export class UsersService {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [users, total] = await Promise.all([
-        this.prisma.user.findMany({
-          take,
-          skip,
-          orderBy: { lastName: 'asc' },
-        }),
+        this.prisma.user.findMany({ take, skip, orderBy: { lastName: 'asc' } }),
         this.prisma.user.count(),
       ]);
       if (total === 0) {
-        throw new HttpException('No se encontraron usuarios', HttpStatus.NOT_FOUND);
+        throw new NotFoundException('No se encontraron usuarios');
       }
       return {
         statusCode: HttpStatus.OK,
@@ -77,12 +76,10 @@ export class UsersService {
         users,
       };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
@@ -91,21 +88,18 @@ export class UsersService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
+      const roleFilter = { contains: role.trim(), mode: 'insensitive' };
       const [users, total] = await Promise.all([
         this.prisma.user.findMany({
-          where: { role },
-          take,
-          skip,
-          orderBy: { lastName: 'asc' },
-        }),
-        this.prisma.user.count({ where: { role } }),
+          where: { role: roleFilter }, take, skip, orderBy: { lastName: 'asc' } }),
+          this.prisma.user.count({ where: { role: roleFilter } }),
       ]);
       if (total === 0) {
-        throw new HttpException('No se encontraron usuarios con el rol: ' + role, HttpStatus.NOT_FOUND);
+        throw new NotFoundException(`No se encontraron usuarios con el rol: ${role}`);
       }
       return {
         statusCode: HttpStatus.OK,
-        message: 'Lista de usuarios con el rol: ' + role,  
+        message: `Lista de usuarios con el rol: ${role}`,
         total,
         page,
         limit,
@@ -115,12 +109,10 @@ export class UsersService {
         users,
       };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
@@ -129,16 +121,17 @@ export class UsersService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
+      const statusFilter = { contains: status.trim(), mode: 'insensitive' };
       const [users, total] = await Promise.all([
-        this.prisma.user.findMany({ where: { status }, take, skip, orderBy: { lastName: 'asc' } }),
-        this.prisma.user.count({ where: { status } }),
+        this.prisma.user.findMany({ where: { status: statusFilter }, take, skip, orderBy: { lastName: 'asc' } }),
+        this.prisma.user.count({ where: { status: statusFilter } }),
       ]);
       if (total === 0) {
-        throw new HttpException('No se encontraron usuarios con el estado: ' + status, HttpStatus.NOT_FOUND);
+        throw new NotFoundException(`No se encontraron usuarios con el estado: ${status}`);
       }
       return {
         statusCode: HttpStatus.OK,
-        message: 'Lista de usuarios con el estado: ' + status,
+        message: `Lista de usuarios con el estado: ${status}`,
         total,
         page,
         limit,
@@ -148,90 +141,70 @@ export class UsersService {
         users,
       };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
   // Encuentra un usuario especifico por numero de identificación Real ID
   async findOneTaxpayer(taxpayer: string) {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { taxpayer },
-      });
+      const normalizedTaxpayer = this.utils.formatIdentification(taxpayer);
+      const user = await this.prisma.user.findFirst({ where: { taxpayer: { contains: normalizedTaxpayer.trim(),  mode: 'insensitive' } }});
       if (!user) {
-        throw new HttpException(
-          'Usuario no encontrado.',
-          HttpStatus.NOT_FOUND,
-        );
+        throw new NotFoundException(`Usuario con ID ${taxpayer} no encontrado.`);
       }
       return user;
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
   // Encuentra un usuario especifico por numero de licencia profesional
   async findOneLicense(licenseSup: string) {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { licenseSup },
-      });
+      const normalizedLicense = this.utils.formatString(licenseSup);
+      const user = await this.prisma.user.findFirst({ where: { licenseSup: { contains: normalizedLicense.trim(),  mode: 'insensitive' }}});
       if (!user) {
-        throw new HttpException(
-          'Usuario no encontrado.',
-          HttpStatus.NOT_FOUND,
-        );
+        throw new NotFoundException(`Usuario con TP ${licenseSup} no encontrado.`);
       }
       return user;
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
   // Encuentra un usuario especifico por ID
   async findOne(id: string) {
-    if (!id || !this.utils.validateUUID(id)) {
-      throw new BadRequestException('El ID debe ser un UUID válido.');
-    }
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { id },
-      });
+      const user = await this.prisma.user.findUnique({ where: { id } });
       if (!user) {
-        throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
+        throw new NotFoundException(`Usuario con ID ${id} no encontrado.`);
       }
       return user;
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 
   // Actualizar un usuario existente
   async update(id: string, updateUserDto: UpdateUserDto) {
     try {
-      if (!this.utils.validateUUID(id)) {
-        throw new HttpException('Formato de UUID no válido', HttpStatus.BAD_REQUEST);
-      }
+      const existingUser = await this.prisma.user.findUnique({ where: { id } });
+      if (!existingUser) {
+      throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
+    }
       const updatedUser = await this.prisma.user.update({
         where: { id },
         data: {
@@ -241,21 +214,23 @@ export class UsersService {
           lastName: this.utils.capitalizeFirstLetter(updateUserDto.lastName),
           phone: this.utils.formatPhoneNumber(updateUserDto.phone),
           taxpayer: this.utils.formatIdentification(updateUserDto.taxpayer),
-          email: updateUserDto.email.toLowerCase(),
+          email: updateUserDto.email ? updateUserDto.email.toLowerCase() : existingUser.email,
           password: updateUserDto.password,
+          /* password: updateUserDto.password ? await bcrypt.hash(updateUserDto.password, 10) : undefined, */
           role: this.utils.capitalizeFirstLetter(updateUserDto.role),
           status: this.utils.capitalizeFirstLetter(updateUserDto.status),
           dateBirth: updateUserDto.dateBirth,
         },
       });
-      return updatedUser;
+      return { message: 'Usuario actualizado satisfactoriamente', data: updatedUser };
     } catch (error) {
-      const status = error?.status || HttpStatus.INTERNAL_SERVER_ERROR;
-      const message = error?.response?.message || 'Ha ocurrido un error inesperado';
-      throw new HttpException({ 
-        statusCode: status, 
-        message 
-      }, status);
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      if (error.code === 'P2025') {
+        throw new NotFoundException(`Registro con ID ${id} no encontrado.`);
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
 

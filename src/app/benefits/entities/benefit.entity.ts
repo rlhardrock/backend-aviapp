@@ -8,9 +8,9 @@ export class Benefit {
     
   public  id:                          string;
   
-  public  licenseSupBef:               string;
+  public  licenseSup:                  string;
   public  license:                     string;
-  public  placa:                       string;
+  public  plate:                       string;
   public  business:                    string;
   public  taxpayer:                    string;
 
