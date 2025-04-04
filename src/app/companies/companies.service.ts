@@ -81,7 +81,7 @@ export class CompaniesService {
   // Buscar un empresa por su ID
   async findOne(id: string) {
     try {
-      const business = await this.prisma.business.findUnique({ where: { id } });
+      const business = await this.prisma.company.findUnique({ where: { id } });
       if (!business) {
         throw new NotFoundException(`Empresa con ID ${id} no encontrada.`);
       }

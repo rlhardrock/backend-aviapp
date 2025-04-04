@@ -10,14 +10,14 @@ export class ProfessionalsController {
   constructor(private readonly professionalsService: ProfessionalsService) {}
 
   // Endpoint para crear un nuevo profesional
-  @Post('professionalRegister')
+  @Post('professional/register')
   /* @UseGuards(AuthGuard('jwt')) */
   create(@Body() createProfessionalDto: CreateProfessionalDto) {
     return this.professionalsService.create(createProfessionalDto);
   }
 
   // Endpoint para obtener todos los profesionales
-  @Get('professionalList')
+  @Get('professional/list')
   @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
   findAll(@Query() paginationDto: PaginationDto) {
@@ -25,28 +25,28 @@ export class ProfessionalsController {
   }
 
   // Endpoint para obtener un profesional por id
-  @Get('professional/:id')
+  @Get('professional/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.professionalsService.findOne(id);
   }
 
   // Endpoint para obtener un profesional por taxpayer
-  @Get('professional/:taxpayer')
+  @Get('professional/taxpayer/:taxpayer')
   /* @UseGuards(AuthGuard('jwt')) */
   findByTaxpayer(@Param('taxpayer') taxpayer: string) {
     return this.professionalsService.findByTaxpayer(taxpayer);
   }
 
   // Endpoint para obtener un profesional por license
-  @Get('professional/:license')
+  @Get('professional/license/:license')
   /*  @UseGuards(AuthGuard('jwt')) */
   findByLicense(@Param('license') license: string) {
     return this.professionalsService.findByLicense(license);
   }
 
   // Endpoint para obtener todos los profesionales por role
-  @Get('professional/:role')
+  @Get('professional/role/:role')
   @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
   findByRole(@Param('role') role: string, @Query() paginationDto: PaginationDto) {
@@ -54,7 +54,7 @@ export class ProfessionalsController {
   }
 
   // Endpoint para obtener todos los profesionales por status
-  @Get('professional/:status')
+  @Get('professional/status/:status')
   @UsePipes(new ValidationPipe({ transform: true }))  
   /* @UseGuards(AuthGuard('jwt')) */
   findByStatus(@Query() paginationDto: PaginationDto, @Param('status') status: string) {
@@ -62,14 +62,14 @@ export class ProfessionalsController {
   }
 
   // Endpoint para actualizar un profesional
-  @Patch('professional/:id')
+  @Patch('professional/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(@Param('id', ParseUUIDPipe) id: string, @Body() updateProfessionalDto: UpdateProfessionalDto) {
     return this.professionalsService.update(id, updateProfessionalDto);
   }
 
   // Endpoint para eliminar un profesional
-  @Delete('professional/:id')
+  @Delete('professional/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.professionalsService.remove(id);

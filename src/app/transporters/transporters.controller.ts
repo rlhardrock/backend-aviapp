@@ -10,14 +10,14 @@ export class TransportersController {
   constructor(private readonly transportersService: TransportersService) {}
 
   // Endpoint para crear un nuevo transportador
-  @Post('transporterRegister')
+  @Post('transporter/register')
   /* @UseGuards(AuthGuard('jwt')) */
   create(@Body() createTransporterDto: CreateTransporterDto) {
     return this.transportersService.create(createTransporterDto);
   }
 
   // Endpoint para buscar todos los transportadores
-  @Get('transporterList') 
+  @Get('transporter/list') 
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAll(@Query() paginationDto: PaginationDto) {
@@ -25,28 +25,28 @@ export class TransportersController {
   }
 
   // Endpoint para buscar un transportador por su id
-  @Get('transporter/:id')
+  @Get('transporter/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.transportersService.findOne(id);
   }
 
   // Endpoint para buscar un transportador por su transporterId
-  @Get('transporter/:taxpayer')
+  @Get('transporter/taxpayer/:taxpayer')
   /* @UseGuards(AuthGuard('jwt')) */
   findOneTransporter(@Param('taxpayer') taxpayer: string) {
     return this.transportersService.findOneTransporter(taxpayer);
   }
 
   // Endpoint para actualizar un transportador
-  @Patch('transporter/:id')
+  @Patch('transporter/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(@Param('id', ParseUUIDPipe) id: string, @Body() updateTransporterDto: UpdateTransporterDto) {
     return this.transportersService.update(id, updateTransporterDto);
   }
 
   // Endpoint para eliminar un transportador
-  @Delete('transporter/:id')
+  @Delete('transporter/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.transportersService.remove(id);

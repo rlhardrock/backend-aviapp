@@ -4,7 +4,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
 import { PaginationDto } from '../utils/pagination.dto';
-import { contains } from 'class-validator';
 import { Prisma } from '@prisma/client';
 
 @Injectable()

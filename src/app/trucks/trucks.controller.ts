@@ -10,14 +10,14 @@ export class TrucksController {
   constructor(private readonly trucksService: TrucksService) {}
 
   // Endpoints para crear camiones
-  @Post('truckRegister')
+  @Post('truck/register')
   /* @UseGuards(AuthGuard('jwt')) */
   async create(@Body() createTruckDto: CreateTruckDto) {
     return this.trucksService.create(createTruckDto);
   }
 
   // Endpoints para buscar camiones
-  @Get('truckList')
+  @Get('truck/list')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   async findAll(@Query() paginationDto: PaginationDto) {
@@ -25,21 +25,21 @@ export class TrucksController {
   }
 
   // Endpoints para buscar camiones por ID
-  @Get('truck/:id')
+  @Get('truck/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.trucksService.findOne(id);
   }
 
   // Endpoints para buscar camiones por placa
-  @Get('truck/:plate')
+  @Get('truck/plate/:plate')
   /* @UseGuards(AuthGuard('jwt')) */
   async findOneByPlate(@Param('plate') plate: string) {
     return this.trucksService.findOneByPlate(plate);
   }
 
   // Endpoints para buscar camiones por marca
-  @Get('truck/:brand')
+  @Get('truck/brand/:brand')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   async findAllByBrand(@Param('brand') brand: string, @Query() paginationDto: PaginationDto) {
@@ -47,7 +47,7 @@ export class TrucksController {
   }
 
   // Endpoints para buscar camiones por modelo
-  @Get('truck/:model')
+  @Get('truck/model/:model')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   async findAllByModel(@Param('model') model: string, @Query() paginationDto: PaginationDto) {
@@ -55,7 +55,7 @@ export class TrucksController {
   }
 
   // Endpoints para buscar camiones por color
-  @Get('truck/:paint')
+  @Get('truck/paint/:paint')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   async findAllByPaint(@Param('paint') paint: string, @Query() paginationDto: PaginationDto) {
@@ -63,7 +63,7 @@ export class TrucksController {
   }
 
   // Endpoints para actualizar camiones
-  @Patch('truck/:id')
+  @Patch('truck/id/:id')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateTruckDto: UpdateTruckDto) {
@@ -71,7 +71,7 @@ export class TrucksController {
   }
     
   // Endpoints para eliminar camiones
-  @Delete('truck/:id')
+  @Delete('truck/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.trucksService.remove(id);

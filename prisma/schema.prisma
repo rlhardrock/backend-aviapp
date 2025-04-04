@@ -50,7 +50,6 @@ model Transporter {
   lastName      String
   phone         String
   taxpayer      String   @unique
-  dateBirth     DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   benefits Benefit[] @relation("TransporterBenefit")

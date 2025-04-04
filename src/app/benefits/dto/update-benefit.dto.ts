@@ -16,7 +16,7 @@ export class UpdateBenefitDto extends PartialType(CreateBenefitDto) {
     @IsOptional()
     @IsString()
     @MaxLength(25)
-    placa?: string;
+    plate?: string;
 
     @IsOptional()
     @IsString()

@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
 import { BenefitsFormulasService } from './benefits-formulas.service';
 import { PaginationDto } from '../utils/pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class BenefitsService {
@@ -27,7 +28,7 @@ export class BenefitsService {
         data: {
           licenseSup: this.utils.formatString(createBenefitDto.licenseSup),
           license: this.utils.formatString(createBenefitDto.license),
-          placa: this.utils.formatString(createBenefitDto.placa),
+          plate: this.utils.formatString(createBenefitDto.plate),
           business: this.utils.formatString(createBenefitDto.business),
           taxpayer: this.utils.formatString(createBenefitDto.taxpayer),
           idRemision: normalizedRemision,
@@ -126,7 +127,8 @@ export class BenefitsService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const idPlanSanitarioFilter = { contains: idPlanSanitario.trim(), mode: 'insensitive' };
+      const idPlanSanitarioFilter: Prisma.StringFilter = {contains: idPlanSanitario.trim(), mode: Prisma.QueryMode.insensitive}
+      /* const idPlanSanitarioFilter = { contains: idPlanSanitario.trim(), mode: 'insensitive' }; */
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({ where: { idPlanSanitario: idPlanSanitarioFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
         this.prisma.benefit.count({ where: { idPlanSanitario: idPlanSanitarioFilter } }),
@@ -158,7 +160,8 @@ export class BenefitsService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const businessFilter = { contains: business.trim(), mode: 'insensitive' };
+      const businessFilter: Prisma.StringFilter = {contains: business.trim(), mode: Prisma.QueryMode.insensitive}
+      /* const businessFilter = { contains: business.trim(), mode: 'insensitive' }; */
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({ where: { business: businessFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
         this.prisma.benefit.count({ where: { business: businessFilter } }),
@@ -190,7 +193,8 @@ export class BenefitsService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const licenseSupFilter = { contains: licenseSup.trim(), mode: 'insensitive' };
+      const licenseSupFilter: Prisma.StringFilter = {contains: licenseSup.trim(), mode: Prisma.QueryMode.insensitive}
+      /* const licenseSupFilter = { contains: licenseSup.trim(), mode: 'insensitive' }; */
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({ where: { licenseSup: licenseSupFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
         this.prisma.benefit.count({ where: { licenseSup: licenseSupFilter } }),
@@ -222,7 +226,8 @@ export class BenefitsService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const licenseFilter = { contains: license.trim(), mode: 'insensitive' };
+      const licenseFilter: Prisma.StringFilter = {contains: license.trim(), mode: Prisma.QueryMode.insensitive}
+      /* const licenseFilter = { contains: license.trim(), mode: 'insensitive' }; */
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({ where: { license: licenseFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
         this.prisma.benefit.count({ where: { license: licenseFilter } }),
@@ -254,7 +259,8 @@ export class BenefitsService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const plateFilter = { contains: plate.trim(), mode: 'insensitive' };
+      const plateFilter: Prisma.StringFilter = {contains: plate.trim(), mode: Prisma.QueryMode.insensitive}
+      /* const plateFilter = { contains: plate.trim(), mode: 'insensitive' }; */
       const [benefits, total] = await Promise.all([
         this.prisma.benefit.findMany({ where: { plate: plateFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
         this.prisma.benefit.count({ where: { plate: plateFilter } }),
@@ -286,9 +292,10 @@ export class BenefitsService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const taxpayerFilter = { contains: taxpayer.trim(), mode: 'insensitive' };
+      const taxpayerFilter: Prisma.StringFilter = {contains: taxpayer.trim(), mode: Prisma.QueryMode.insensitive}
+      /* const taxpayerFilter = { contains: taxpayer.trim(), mode: 'insensitive' }; */
       const [benefits, total] = await Promise.all([
-        this.prisma.benefit.findMany({ where: { taxpayer: taxpayerFilter }, take, skip, orderBy: { lastName: 'asc' } }),
+        this.prisma.benefit.findMany({ where: { taxpayer: taxpayerFilter }, take, skip, orderBy: { idRemision: 'asc' } }),
         this.prisma.benefit.count({ where: { taxpayer: taxpayerFilter } }),
       ]);
       if (total === 0) {
@@ -358,7 +365,7 @@ export class BenefitsService {
         data: {
           licenseSup: this.utils.formatString(updateBenefitDto.licenseSup),
           license: this.utils.formatString(updateBenefitDto.license),
-          placa: this.utils.formatString(updateBenefitDto.placa),
+          plate: this.utils.formatString(updateBenefitDto.plate),
           business: this.utils.formatString(updateBenefitDto.business),
           taxpayer: this.utils.formatString(updateBenefitDto.taxpayer),
           idRemision: this.utils.formatString(updateBenefitDto.idRemision),

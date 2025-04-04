@@ -9,14 +9,14 @@ export class BenefitsController {
   constructor(private readonly benefitsService: BenefitsService) {}
 
   // Endpoint para crear un nuevo benefit 
-  @Post('benefitRegister')
+  @Post('benefit/register')
   /* @UseGuards(AuthGuard('jwt')) */  
   create(@Body() createBenefitDto: CreateBenefitDto) {
     return this.benefitsService.create(createBenefitDto);
   }
 
   // Endpoint para obtener todos los benefits 
-  @Get('benefitList')
+  @Get('benefit/list')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAll(@Query() paginationDto: PaginationDto) {
@@ -24,21 +24,21 @@ export class BenefitsController {
   } 
 
   // Endpoint para obtener un benefit por id
-  @Get('benefit/:id')
+  @Get('benefit/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.benefitsService.findOne(id);
   }
 
   // Endpoint para obtener un benefit por idRemision
-  @Get('benefit/:idRemision')
+  @Get('benefit/idRemision/:idRemision')
   /* @UseGuards(AuthGuard('jwt')) */
   findOneByIdRemision(@Param('idRemision') idRemision: string) {
     return this.benefitsService.findOneByIdRemision(idRemision);
   }   
 
   // Endpoint para obtener todos los benefits por idPlanSanitario
-  @Get('benefit/:idPlanSanitario')  
+  @Get('benefit/idPlanSanitario/:idPlanSanitario')  
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAllByIdPlanSanitario(@Param('idPlanSanitario') idPlanSanitario: string, @Query() paginationDto: PaginationDto) {
@@ -46,7 +46,7 @@ export class BenefitsController {
   } 
 
   // Endpoint para obtener todos los benefits por idEmpresa
-  @Get('benefit/:business')  
+  @Get('benefit/business/:business')  
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAllByIdEmpresa(@Param('business') business: string, @Query() paginationDto: PaginationDto) {
@@ -54,7 +54,7 @@ export class BenefitsController {
   } 
 
   // Endpoint para obtener todos los benefits por tuSupervisor (Huesped)
-  @Get('benefit/:licenseSup')    
+  @Get('benefit/licenseSup/:licenseSup')    
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAllByTpSupervisorPlanta(@Param('licenseSup') licenseSup: string, @Query() paginationDto: PaginationDto) {
@@ -62,7 +62,7 @@ export class BenefitsController {
   } 
 
   // Endpoint para obtener todos los benefits por tpProfesional (Invitado)
-  @Get('benefit/:license')    
+  @Get('benefit/license/:license')    
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAllByTpProfesionalPlanta(@Param('license') license: string, @Query() paginationDto: PaginationDto) {
@@ -70,15 +70,15 @@ export class BenefitsController {
   } 
 
   // Endpoint para obtener todos los benefits por placa
-  @Get('benefit/:placa')  
+  @Get('benefit/plate/:plate')  
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  findAllByPlaca(@Param('placa') placa: string, @Query() paginationDto: PaginationDto) {
-    return this.benefitsService.findAllByPlaca(placa, paginationDto);
+  findAllByPlate(@Param('plate') plate: string, @Query() paginationDto: PaginationDto) {
+    return this.benefitsService.findAllByPlaca(plate, paginationDto);
   } 
 
   // Endpoint para obtener todos los benefits por idConductor
-  @Get('benefit/:taxpayer')    
+  @Get('benefit/taxpayer/:taxpayer')    
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAllByIdConductor(@Param('taxpayer') taxpayer: string, @Query() paginationDto: PaginationDto) {
@@ -86,14 +86,14 @@ export class BenefitsController {
   } 
 
   // Endpoint para actualizar un benefit
-  @Patch('benefit/:id')
+  @Patch('benefit/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(@Param('id', ParseUUIDPipe) id: string, @Body() updateBenefitDto: UpdateBenefitDto) {
     return this.benefitsService.update(id, updateBenefitDto);
   }
 
   // Endpoint para eliminar un benefit
-  @Delete('benefit/:id')
+  @Delete('benefit/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.benefitsService.remove(id);

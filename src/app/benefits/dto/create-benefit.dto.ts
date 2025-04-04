@@ -11,7 +11,7 @@ export class CreateBenefitDto {
 
     @IsString()
     @IsNotEmpty()
-    placa: string;
+    plate: string;
 
     @IsString()
     @IsNotEmpty()

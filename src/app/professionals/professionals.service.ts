@@ -1,9 +1,10 @@
-import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, HttpException, HttpStatus, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateProfessionalDto } from './dto/create-professional.dto';
 import { UpdateProfessionalDto } from './dto/update-professional.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
 import { PaginationDto } from '../utils/pagination.dto';
+import { Prisma } from '@prisma/client';
 
 @Injectable()
 export class ProfessionalsService {
@@ -119,7 +120,8 @@ export class ProfessionalsService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const roleFilter = { contains: role.trim(), mode: 'insensitive' };
+      const roleFilter: Prisma.StringFilter = { contains: role.trim(), mode: Prisma.QueryMode.insensitive };
+      /* const roleFilter = { contains: role.trim(), mode: 'insensitive' }; */
       const [professionals, total] = await Promise.all([
         this.prisma.professional.findMany({
           where: { role: roleFilter }, take, skip, orderBy: { lastName: 'asc' } }),
@@ -152,7 +154,8 @@ export class ProfessionalsService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const statusFilter = { contains: status.trim(), mode: 'insensitive' };
+      const statusFilter: Prisma.StringFilter = { contains: status.trim(), mode: Prisma.QueryMode.insensitive };
+      /* const statusFilter = { contains: status.trim(), mode: 'insensitive' }; */
       const [professionals, total] = await Promise.all([
         this.prisma.professional.findMany({ where: { status: statusFilter }, take, skip, orderBy: { lastName: 'asc' } }),
         this.prisma.professional.count({ where: { status: statusFilter } }),
