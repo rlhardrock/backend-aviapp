@@ -34,7 +34,7 @@ export class ProfessionalsService {
         };
         const newProfessional = await this.prisma.professional.create({
           data: {
-            formattedProfessionalData
+            ...formattedProfessionalData
           },
         });
       return {

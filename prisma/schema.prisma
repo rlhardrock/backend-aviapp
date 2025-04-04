@@ -14,9 +14,9 @@ datasource db {
 }
 
 model User {
-  id         String   @default(uuid())
+  id         String   @id @default(uuid())
   sex        String
-  licenseSup String   @id @unique
+  licenseSup String   @unique
   name       String
   lastName   String
   phone      String
@@ -32,23 +32,24 @@ model User {
 }
 
 model Truck {
-  id         String  @default(uuid())
+  id         String  @id @default(uuid())
   brand      String
   model      String
   paint      String
   year       Int
-  plate      String   @id @unique
+  plate      String   @unique
+  trailer    String
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   benefits Benefit[] @relation("TruckBenefit")
 }
 
 model Transporter {
-  id            String  @default(uuid())
+  id            String   @id @default(uuid())
   name          String
   lastName      String
   phone         String
-  taxpayer      String   @id @unique
+  taxpayer      String   @unique
   dateBirth     DateTime
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -56,9 +57,9 @@ model Transporter {
 }
 
 model Company {
-  id         String   @default(uuid())
+  id         String   @id @default(uuid())
   name       String   @unique
-  business   String   @id @unique
+  business   String   @unique
   phone      String
   email      String   @unique
   city       String
@@ -68,14 +69,14 @@ model Company {
 }
 
 model Professional {
-  id                String @default(uuid())
+  id                String @id @default(uuid())
   sex               String
   name              String
   lastName          String
   phone             String  
   taxpayer          String @unique
   email             String @unique
-  license           String @id @unique
+  license           String @unique
   role              String
   status            String
   createdAt       DateTime @default(now())

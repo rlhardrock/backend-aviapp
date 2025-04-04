@@ -10,14 +10,14 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   // Endpoint para crear un usuario
-  @Post('userRegister')
+  @Post('user/register')
   /* @UseGuards(AuthGuard('jwt')) */
   create(@Body() createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 
   // Endpoint para obtener todos los usuarios
-  @Get('userList')
+  @Get('user/list')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAll(@Query() paginationDto: PaginationDto) {
@@ -25,7 +25,7 @@ export class UsersController {
   }
 
   // Endpoint para obtener todos los usuarios por rol
-  @Get('user/:role')
+  @Get('user/role/:role')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAllByRole(@Param('role') role: string, @Query() paginationDto: PaginationDto) {
@@ -33,7 +33,7 @@ export class UsersController {
   }
 
   // Endpoint para obtener todos los usuarios por estado  
-  @Get('user/:status')
+  @Get('user/status/:status')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
   findAllByStatus(@Param('status') status: string, @Query() paginationDto: PaginationDto) {
@@ -41,35 +41,35 @@ export class UsersController {
   }
  
   // Endpoint para obtener un usuario por numero de identificacion
-  @Get('user/:taxpayer')
+  @Get('user/taxpayer/:taxpayer')
   /* @UseGuards(AuthGuard('jwt')) */
   findOneTaxpayer(@Param('taxpayer') taxpayer: string) {
     return this.usersService.findOneTaxpayer(taxpayer);
   }
 
   // Endpoint para obtener un usuario por numero de licencia profesional
-  @Get('user/:license')
+  @Get('user/license/:license')
   /* @UseGuards(AuthGuard('jwt')) */
   findOneLicense(@Param('license') license: string) {
     return this.usersService.findOneLicense(license);
   }
 
   // Endpoint para obtener un usuario por id
-  @Get('user/:id')
+  @Get('user/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.findOne(id);
   }
 
   // Endpoint para actualizar un usuario
-  @Patch('user/:id')
+  @Patch('user/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   update(@Param('id', ParseUUIDPipe) id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
   
   // Endpoint para eliminar un usuario
-  @Delete('user/:id')
+  @Delete('user/id/:id')
   /* @UseGuards(AuthGuard('jwt')) */
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.remove(id);

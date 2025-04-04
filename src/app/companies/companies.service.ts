@@ -31,7 +31,7 @@ export class CompaniesService {
       };
       const newCompany = await this.prisma.company.create({
         data: {
-          formattedCompanyData
+          ...formattedCompanyData
         },
       });
       return {

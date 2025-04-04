@@ -31,7 +31,7 @@ export class TransportersService {
       });
       const newTransporter = await this.prisma.user.create({
         data: {
-          formattedTransporterData
+          ...formattedTransporterData
         },
       });
       return {

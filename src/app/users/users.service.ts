@@ -5,6 +5,8 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
 import { PaginationDto } from '../utils/pagination.dto';
 import { contains } from 'class-validator';
+import { Prisma } from '@prisma/client';
+
 @Injectable()
 export class UsersService {
  
@@ -36,7 +38,7 @@ export class UsersService {
       };
       const newUser = await this.prisma.user.create({
         data: {
-          formattedUserData
+          ...formattedUserData
         },
       });
       return {
@@ -88,7 +90,8 @@ export class UsersService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const roleFilter = { contains: role.trim(), mode: 'insensitive' };
+      const roleFilter: Prisma.StringFilter = { contains: role.trim(), mode: Prisma.QueryMode.insensitive };
+      /* const roleFilter = { contains: role.trim(), mode: 'insensitive' }; */
       const [users, total] = await Promise.all([
         this.prisma.user.findMany({
           where: { role: roleFilter }, take, skip, orderBy: { lastName: 'asc' } }),
@@ -121,7 +124,8 @@ export class UsersService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const statusFilter = { contains: status.trim(), mode: 'insensitive' };
+      const statusFilter: Prisma.StringFilter = { contains: status.trim(), mode: Prisma.QueryMode.insensitive };
+      /* const statusFilter = { contains: status.trim(),  mode: 'insensitive' }; */
       const [users, total] = await Promise.all([
         this.prisma.user.findMany({ where: { status: statusFilter }, take, skip, orderBy: { lastName: 'asc' } }),
         this.prisma.user.count({ where: { status: statusFilter } }),

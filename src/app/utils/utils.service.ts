@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js';
 
 @Injectable()
@@ -56,6 +57,14 @@ export class UtilsService {
 
     validateUUID(id: string): boolean {
         const regex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-    return regex.test(id);
-  }
+        return regex.test(id);
+    }
+
+    caseInsensitiveContains(value: string): Prisma.StringFilter {
+        return {
+          contains: value,
+          mode: 'insensitive',
+        };
+    }
+
 }

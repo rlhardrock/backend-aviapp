@@ -40,7 +40,7 @@ export class TrucksService {
       });
       const newTruck = await this.prisma.truck.create({
         data:{
-          formattedTruckData
+          ...formattedTruckData
         }
       });
       return {
@@ -126,7 +126,7 @@ export class TrucksService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const brandFilter = { contains: brand.trim(), mode: 'insensitive' };
+      const brandFilter = this.utils.caseInsensitiveContains(brand);
       const [trucks, total] = await Promise.all([
         this.prisma.truck.findMany({ where: { brand: brandFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
         this.prisma.truck.count({ where: { brand: brandFilter } }),
@@ -158,7 +158,7 @@ export class TrucksService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const modelFilter = { contains: model.trim(), mode: 'insensitive' };
+      const modelFilter = this.utils.caseInsensitiveContains(model);
       const [trucks, total] = await Promise.all([
         this.prisma.truck.findMany({ where: { model: modelFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
         this.prisma.truck.count({ where: { model: modelFilter } }),
@@ -190,7 +190,7 @@ export class TrucksService {
     try {
       const { page, limit } = paginationDto;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const paintFilter = { contains: paint.trim(), mode: 'insensitive' };
+      const paintFilter = this.utils.caseInsensitiveContains(paint);
       const [trucks, total] = await Promise.all([
       this.prisma.truck.findMany({ where: { paint: paintFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.truck.count({ where: { paint: paintFilter } }),
