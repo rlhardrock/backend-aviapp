@@ -2,14 +2,15 @@ import { Module } from '@nestjs/common';
 import { TrucksService } from './trucks.service';
 import { TrucksController } from './trucks.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
-import { UtilsService } from '../utils/utils.service';
+import { SharedModule } from '../utils/shared/shared.module';
 
 @Module({
   imports: [
-    PrismaModule, 
-    UtilsService
+    PrismaModule,
+    SharedModule
   ],
-  controllers: [TrucksController],
+  controllers: [TrucksController, ],
   providers: [TrucksService],
+  exports: [TrucksService]
 })
 export class TrucksModule {}
