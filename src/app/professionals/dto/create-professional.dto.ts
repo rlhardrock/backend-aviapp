@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, MaxLength } from "class-validator/types/decorator/decorators";
+import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, MaxLength } from "class-validator";
 
 export class CreateProfessionalDto {
     
