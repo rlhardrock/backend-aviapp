@@ -5,6 +5,7 @@ import { UtilsService } from '../utils/utils.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationDto } from '../utils/pagination.dto';
 import { contains } from 'class-validator';
+import { FilterTruckDto } from './dto/filter-truck.dto';
 
 
 @Injectable()
@@ -28,7 +29,7 @@ export class TrucksService {
       if (createTruckDto.year < 1950 || createTruckDto.year > currentYear) {
         throw new BadRequestException(`El año ${createTruckDto.year} no es válido.`);
       }
-      const formattedTruckData = await this.prisma.truck.create({
+      const newTruck = await this.prisma.truck.create({
         data: {
           brand: this.utils.capitalizeFirstLetter(createTruckDto.brand),
           model: this.utils.capitalizeFirstLetter(createTruckDto.model),
@@ -37,11 +38,6 @@ export class TrucksService {
           plate: this.utils.formatString(createTruckDto.plate),
           trailer: this.utils.capitalizeFirstLetter(createTruckDto.trailer),
         },
-      });
-      const newTruck = await this.prisma.truck.create({
-        data:{
-          ...formattedTruckData
-        }
       });
       return {
         statusCode: HttpStatus.CREATED,
@@ -122,11 +118,11 @@ export class TrucksService {
   }
   
   // Encuentra todos los camiones por marca
-  async findAllByBrand(brand: string, paginationDto: PaginationDto) {
+  async findAllByBrand(filterTruck: FilterTruckDto) {
     try {
-      const { page, limit } = paginationDto;
+      const { page, limit, brand } = filterTruck;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const brandFilter = this.utils.caseInsensitiveContains(brand);
+      const brandFilter = brand ? this.utils.caseInsensitiveContains(brand): undefined;
       const [trucks, total] = await Promise.all([
         this.prisma.truck.findMany({ where: { brand: brandFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
         this.prisma.truck.count({ where: { brand: brandFilter } }),
@@ -153,50 +149,18 @@ export class TrucksService {
     }
   }
 
-  // Encuentra todos los camiones por modelo
-  async findAllByModel(model: string, paginationDto: PaginationDto) {
-    try {
-      const { page, limit } = paginationDto;
-      const { take, skip } = this.utils.paginateList(page, limit);
-      const modelFilter = this.utils.caseInsensitiveContains(model);
-      const [trucks, total] = await Promise.all([
-        this.prisma.truck.findMany({ where: { model: modelFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
-        this.prisma.truck.count({ where: { model: modelFilter } }),
-      ]);
-      if (total === 0) {
-        throw new NotFoundException(`No se encontraron camiones con el modelo: ${model}`);
-      }
-      return {
-        statusCode: HttpStatus.OK,
-        message: `Lista de camiones con el modelo ${model}`,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-        hasNextPage: page * limit < total,
-        hasPrevPage: page > 1,
-        trucks,
-      };
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
-    }
-  }
-
   // Encuentra todos los camiones por color
-  async findAllByPaint(paint: string, paginationDto: PaginationDto) {
+  async findAllByPaint(filterTruck: FilterTruckDto) {
     try {
-      const { page, limit } = paginationDto;
+      const { page, limit, paint } = filterTruck;
       const { take, skip } = this.utils.paginateList(page, limit);
-      const paintFilter = this.utils.caseInsensitiveContains(paint);
+      const paintFilter = paint ? this.utils.caseInsensitiveContains(paint) : undefined;
       const [trucks, total] = await Promise.all([
       this.prisma.truck.findMany({ where: { paint: paintFilter }, take, skip, orderBy: { createdAt: 'desc' } }),
       this.prisma.truck.count({ where: { paint: paintFilter } }),
       ]);
       if (total === 0) {
-        throw new NotFoundException(`No se encontraron camiones con el color: ${paint}`);
+        throw new NotFoundException(`No se encontraron camiones con el color de pintura ${paint}`);
       }
       return {
         statusCode: HttpStatus.OK,

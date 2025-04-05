@@ -10,7 +10,7 @@ export class CompaniesController {
 
   @Post('company/register')
   /* @UseGuards(AuthGuard('jwt')) */
-  create(@Body() createCompanyDto: CreateCompanyDto) {
+  create(@Body(new ValidationPipe()) createCompanyDto: CreateCompanyDto) {
     return this.companiesService.create(createCompanyDto);
   }
 

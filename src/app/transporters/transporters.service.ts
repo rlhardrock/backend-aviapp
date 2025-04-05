@@ -21,15 +21,12 @@ export class TransportersService {
       if (existingTransporter) {
         throw new ConflictException(`La identificación del transportador ${taxpayer} ya está registrado.`);
       }
-      const formattedTransporterData = {
-        name: this.utils.capitalizeFirstLetter(createTransporterDto.name),
-        lastName: this.utils.capitalizeFirstLetter(createTransporterDto.lastName),
-        phone: this.utils.formatPhoneNumber(createTransporterDto.phone),
-        taxpayer: this.utils.formatIdentification(createTransporterDto.taxpayer),
-      };
       const newTransporter = await this.prisma.transporter.create({
         data: {
-          ...formattedTransporterData
+          name: this.utils.capitalizeFirstLetter(createTransporterDto.name),
+          lastName: this.utils.capitalizeFirstLetter(createTransporterDto.lastName),
+          phone: this.utils.formatPhoneNumber(createTransporterDto.phone),
+          taxpayer: this.utils.formatIdentification(createTransporterDto.taxpayer),
         },
       });
       return {

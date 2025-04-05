@@ -22,22 +22,19 @@ export class CompaniesService {
       if (existingCompany) {
         throw new ConflictException(`El NIT de la compañia ${businessFormat} ya está registrado.`);
       }
-      const formattedCompanyData = {
-        name: this.utils.capitalizeFirstLetter(createCompanyDto.name),
-        business: businessFormat,
-        phone: this.utils.formatPhoneNumber(createCompanyDto.phone),
-        email: createCompanyDto.email.toLowerCase(),
-        city: this.utils.capitalizeFirstLetter(createCompanyDto.city),
-      };
       const newCompany = await this.prisma.company.create({
         data: {
-          ...formattedCompanyData
+          name: this.utils.capitalizeFirstLetter(createCompanyDto.name),
+          business: businessFormat,
+          phone: this.utils.formatPhoneNumber(createCompanyDto.phone),
+          email: createCompanyDto.email.toLowerCase(),
+          city: this.utils.capitalizeFirstLetter(createCompanyDto.city),
         },
       });
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Empresa creada exitosamente',
-        data: newCompany,
+        newCompany,
       };
     } catch (error) {
       if (error instanceof HttpException) {

@@ -22,7 +22,8 @@ export class ProfessionalsService {
      if (existingProfessional) {
        throw new ConflictException(`La matricula profesional ${normalizedLicense} ya está registrada.`);
      }
-     const formattedProfessionalData = {
+     const newProfessional = await this.prisma.professional.create({
+        data: {
           sex: this.utils.capitalizeFirstLetter(createProfessionalDto.sex),
           license: normalizedLicense,
           name: this.utils.capitalizeFirstLetter(createProfessionalDto.name),
@@ -31,17 +32,13 @@ export class ProfessionalsService {
           taxpayer: this.utils.formatIdentification(createProfessionalDto.taxpayer),
           email: createProfessionalDto.email.toLowerCase(),
           role: this.utils.capitalizeFirstLetter(createProfessionalDto.role),
-          status: this.utils.capitalizeFirstLetter(createProfessionalDto.status),
-        };
-        const newProfessional = await this.prisma.professional.create({
-          data: {
-            ...formattedProfessionalData
+          status: this.utils.capitalizeFirstLetter(createProfessionalDto.status)
           },
         });
       return {
         statusCode: HttpStatus.CREATED,
-        message: 'Profesional creado con éxito.',
-        data: newProfessional,
+        message: `Profesional ${normalizedLicense} creado con éxito.`,
+        newProfessional,
       };
     } catch (error) {
       if (error instanceof HttpException) {

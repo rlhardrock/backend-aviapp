@@ -22,28 +22,25 @@ export class UsersService {
       if (existingUser) {
         throw new ConflictException(`El correo ${email} ya está registrado.`);
       }
-      const formattedUserData = {
-        sex: this.utils.capitalizeFirstLetter(createUserDto.sex),
-        licenseSup: this.utils.formatString(createUserDto.licenseSup),
-        name: this.utils.capitalizeFirstLetter(createUserDto.name),
-        lastName: this.utils.capitalizeFirstLetter(createUserDto.lastName),
-        phone: this.utils.formatPhoneNumber(createUserDto.phone),
-        taxpayer: this.utils.formatIdentification(createUserDto.taxpayer),
-        email: createUserDto.email.toLowerCase(),
-        password: createUserDto.password, // Nota: Asegúrate de cifrar la contraseña con bcrypt o similar
-        role: this.utils.capitalizeFirstLetter(createUserDto.role),
-        status: this.utils.capitalizeFirstLetter(createUserDto.status),
-        dateBirth: createUserDto.dateBirth,
-      };
       const newUser = await this.prisma.user.create({
         data: {
-          ...formattedUserData
-        },
+          sex: this.utils.capitalizeFirstLetter(createUserDto.sex),
+          licenseSup: this.utils.formatString(createUserDto.licenseSup),
+          name: this.utils.capitalizeFirstLetter(createUserDto.name),
+          lastName: this.utils.capitalizeFirstLetter(createUserDto.lastName),
+          phone: this.utils.formatPhoneNumber(createUserDto.phone),
+          taxpayer: this.utils.formatIdentification(createUserDto.taxpayer),
+          email: createUserDto.email.toLowerCase(),
+          password: createUserDto.password, // Nota: Asegúrate de cifrar la contraseña con bcrypt o similar
+          role: this.utils.capitalizeFirstLetter(createUserDto.role),
+          status: this.utils.capitalizeFirstLetter(createUserDto.status),
+          dateBirth: createUserDto.dateBirth,
+        }
       });
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Usuario creado con exito.',
-        data: newUser,
+        newUser,
       };
     } catch (error) {
       if (error instanceof HttpException) {

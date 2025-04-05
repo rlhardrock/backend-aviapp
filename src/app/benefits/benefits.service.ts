@@ -81,7 +81,7 @@ export class BenefitsService {
       return {
         statusCode: HttpStatus.CREATED,
         message: 'Beneficio creado con exito.',
-        data: newBenefit,
+        newBenefit,
       };
     } catch (error) {
       if (error instanceof HttpException) {

@@ -4,6 +4,7 @@ import { CreateTruckDto } from './dto/create-truck.dto';
 import { UpdateTruckDto } from './dto/update-truck.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginationDto } from '../utils/pagination.dto';
+import { FilterTruckDto } from './dto/filter-truck.dto';
 
 @Controller('trucks')
 export class TrucksController {
@@ -12,7 +13,7 @@ export class TrucksController {
   // Endpoints para crear camiones
   @Post('truck/register')
   /* @UseGuards(AuthGuard('jwt')) */
-  async create(@Body() createTruckDto: CreateTruckDto) {
+  async create(@Body(new ValidationPipe()) createTruckDto: CreateTruckDto) {
     return this.trucksService.create(createTruckDto);
   }
 
@@ -39,27 +40,19 @@ export class TrucksController {
   }
 
   // Endpoints para buscar camiones por marca
-  @Get('truck/brand/:brand')
+  @Get('truck/brand')
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  async findAllByBrand(@Param('brand') brand: string, @Query() paginationDto: PaginationDto) {
-    return this.trucksService.findAllByBrand(brand, paginationDto);
-  }
-
-  // Endpoints para buscar camiones por modelo
-  @Get('truck/model/:model')
-  @UsePipes(new ValidationPipe({ transform: true }))
-  /* @UseGuards(AuthGuard('jwt')) */
-  async findAllByModel(@Param('model') model: string, @Query() paginationDto: PaginationDto) {
-    return this.trucksService.findAllByModel(model, paginationDto);
+  async findAllByBrand(@Query() filterTruckDto: FilterTruckDto) {
+    return this.trucksService.findAllByBrand(filterTruckDto);
   }
 
   // Endpoints para buscar camiones por color
-  @Get('truck/paint/:paint')
+  @Get('truck/paint') 
   @UsePipes(new ValidationPipe({ transform: true }))
   /* @UseGuards(AuthGuard('jwt')) */
-  async findAllByPaint(@Param('paint') paint: string, @Query() paginationDto: PaginationDto) {
-    return this.trucksService.findAllByPaint(paint, paginationDto);
+  async findAllByPaint(@Query() filterTruckDto: FilterTruckDto) {
+    return this.trucksService.findAllByPaint(filterTruckDto);
   }
 
   // Endpoints para actualizar camiones

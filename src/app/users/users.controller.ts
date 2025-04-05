@@ -12,7 +12,7 @@ export class UsersController {
   // Endpoint para crear un usuario
   @Post('user/register')
   /* @UseGuards(AuthGuard('jwt')) */
-  create(@Body() createUserDto: CreateUserDto) {
+  create(@Body(new ValidationPipe()) createUserDto: CreateUserDto) {
     return this.usersService.create(createUserDto);
   }
 

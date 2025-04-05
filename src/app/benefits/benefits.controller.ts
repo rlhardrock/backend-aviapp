@@ -11,7 +11,7 @@ export class BenefitsController {
   // Endpoint para crear un nuevo benefit 
   @Post('benefit/register')
   /* @UseGuards(AuthGuard('jwt')) */  
-  create(@Body() createBenefitDto: CreateBenefitDto) {
+  create(@Body(new ValidationPipe()) createBenefitDto: CreateBenefitDto) {
     return this.benefitsService.create(createBenefitDto);
   }
 

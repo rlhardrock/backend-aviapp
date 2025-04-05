@@ -12,7 +12,7 @@ export class ProfessionalsController {
   // Endpoint para crear un nuevo profesional
   @Post('professional/register')
   /* @UseGuards(AuthGuard('jwt')) */
-  create(@Body() createProfessionalDto: CreateProfessionalDto) {
+  create(@Body(new ValidationPipe()) createProfessionalDto: CreateProfessionalDto) {
     return this.professionalsService.create(createProfessionalDto);
   }
 
