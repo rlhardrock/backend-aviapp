@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { CountryCode, parsePhoneNumberFromString } from 'libphonenumber-js';
 
@@ -17,21 +17,42 @@ export class UtilsService {
   
     // Función para formatear el número de identificación con puntos
     formatIdentification(id: string): string {
-    // Elimina los puntos si el ID tiene alguno
-        let cleanedId = id.replace(/\./g, '');
-    // Aplica la expresión regular para insertar puntos cada 3 dígitos
-        return cleanedId.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        const match = id.match(/^(CC|CE|PP|NIT)?/i);
+        let prefix = match?.[0]?.toUpperCase() || 'CC';
+        const digitsOnly = id.replace(/[^\d]/g, '');
+        if (digitsOnly.length === 0) {
+          throw new Error('Identificación inválida: no contiene dígitos.');
+        }
+        const formattedDigits = digitsOnly.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        return `${prefix}-${formattedDigits}`;
     }
 
-        // Formatear número telefónico a un formato legible internacional
-    formatPhoneNumber(phoneNumber: string, country: string = 'CO'): string {
+    // Formatear número telefónico a un formato legible internacional
+    /* formatPhoneNumber(phoneNumber: string, country: string = 'CO'): string {
         const phone = parsePhoneNumberFromString(phoneNumber, country as CountryCode);
         if (phone && phone.isValid()) {
         return phone.formatInternational(); // Retorna el formato internacional
         }
         throw new Error('Número telefónico inválido');
-    }
+    } */
 
+    formatPhoneNumber(phoneNumber: string): string {
+        if (typeof phoneNumber !== 'string') {
+            throw new Error('El número de teléfono debe ser una cadena.');
+        }
+        const cleanNumber = phoneNumber.replace(/\D/g, ''); // elimina caracteres no numéricos
+        if (cleanNumber.length !== 10) {
+            throw new BadRequestException('El número telefónico debe contener exactamente 10 dígitos numéricos.');
+        }
+        const formatted =
+            cleanNumber.slice(0, 3) + '-' +
+            cleanNumber.slice(3, 4) + '-' +
+            cleanNumber.slice(4, 6) + '-' +
+            cleanNumber.slice(6, 8) + '-' +
+            cleanNumber.slice(8, 10);
+        return formatted;
+    }
+          
     formatString(input: string): string {
         // Convertir la cadena a mayúsculas
         let formatted = input.toUpperCase();
@@ -41,6 +62,16 @@ export class UtilsService {
         formatted = formatted.replace(/([a-zA-Z]+)(\d+)/g, '$1-$2');
         formatted = formatted.replace(/(\d+)([a-zA-Z]+)/g, '$1-$2');
         return formatted;
+    }
+
+    formatNIT(nitRaw: string): string {
+        const cleaned = nitRaw.replace(/\D/g, '');
+        if (cleaned.length < 10) {
+          throw new Error('El NIT debe contener al menos 10 dígitos.');
+        }
+        const base = cleaned.slice(0, -1);
+        const checkDigit = cleaned.slice(-1);
+        return `NIT-${base}-${checkDigit}`;
     }
 
     /* paginateList(page?: number, limit?: number) {

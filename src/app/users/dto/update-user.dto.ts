@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateUserDto } from './create-user.dto';
-import { IsOptional, IsString, IsEmail, IsDateString, MaxLength, IsPhoneNumber } from 'class-validator';
+import { IsOptional, IsString, IsEmail, IsDateString, MaxLength, IsPhoneNumber, Matches } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
   
@@ -25,8 +25,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   lastName?: string;
 
   @IsOptional()
-  @IsPhoneNumber('CO')
-  @MaxLength(55)
+  @Matches(/^\d{10}$/, { message: 'El número debe contener exactamente 10 dígitos.' })
   phone?: string;
 
   @IsOptional()

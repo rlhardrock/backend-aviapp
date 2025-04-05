@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsDateString, IsNotEmpty, MaxLength, IsPhoneNumber } from 'class-validator';
+import { IsString, IsEmail, IsDateString, IsNotEmpty, MaxLength, IsPhoneNumber, Matches } from 'class-validator';
 
 export class CreateUserDto {
     
@@ -22,9 +22,8 @@ export class CreateUserDto {
   @MaxLength(50)
   lastName: string;
 
-  @IsPhoneNumber('CO')
   @IsNotEmpty()
-  @MaxLength(20)
+  @Matches(/^\d{10}$/, { message: 'El número debe contener exactamente 10 dígitos.' })
   phone: string;
 
   @IsString()

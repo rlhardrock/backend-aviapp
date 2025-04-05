@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from "class-validator";
+import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, Matches, MaxLength } from "class-validator";
 
 export class CreateTransporterDto {
 
@@ -13,8 +13,7 @@ export class CreateTransporterDto {
     lastName: string;
 
     @IsOptional()
-    @IsPhoneNumber('CO')
-    @MaxLength(20)
+    @Matches(/^\d{10}$/, { message: 'El número debe contener exactamente 10 dígitos.' })
     phone: string;
 
     @IsString()

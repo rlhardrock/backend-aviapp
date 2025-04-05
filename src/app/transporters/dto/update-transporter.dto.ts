@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateTransporterDto } from './create-transporter.dto';
-import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsPhoneNumber, IsString, Matches, MaxLength } from 'class-validator';
 
 export class UpdateTransporterDto extends PartialType(CreateTransporterDto) {
 
@@ -17,8 +17,7 @@ export class UpdateTransporterDto extends PartialType(CreateTransporterDto) {
     lastName?: string;
 
     @IsOptional()
-    @IsPhoneNumber('CO')
-    @MaxLength(55)
+    @Matches(/^\d{10}$/, { message: 'El número debe contener exactamente 10 dígitos.' })
     phone?: string;
 
     @IsOptional()

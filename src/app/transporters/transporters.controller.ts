@@ -12,7 +12,7 @@ export class TransportersController {
   // Endpoint para crear un nuevo transportador
   @Post('transporter/register')
   /* @UseGuards(AuthGuard('jwt')) */
-  create(@Body(new ValidationPipe()) createTransporterDto: CreateTransporterDto) {
+  create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTransporterDto: CreateTransporterDto) {
     return this.transportersService.create(createTransporterDto);
   }
 

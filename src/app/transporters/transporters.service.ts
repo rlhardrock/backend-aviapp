@@ -17,15 +17,21 @@ export class TransportersService {
   async create(createTransporterDto: CreateTransporterDto) {
     try {
       const taxpayer = this.utils.formatIdentification(createTransporterDto.taxpayer);
-      const existingTransporter = await this.prisma.transporter.findFirst({ where: { taxpayer } });
+      const existingTransporter = await this.prisma.transporter.findUnique({ where: { taxpayer } });
       if (existingTransporter) {
         throw new ConflictException(`La identificación del transportador ${taxpayer} ya está registrado.`);
+      }
+      let formattedPhone: string;
+      try {
+        formattedPhone = this.utils.formatPhoneNumber(createTransporterDto.phone);
+      } catch (e) {
+        throw new BadRequestException('Número telefónico inválido. Usa un número móvil colombiano como 3201234567.');
       }
       const newTransporter = await this.prisma.transporter.create({
         data: {
           name: this.utils.capitalizeFirstLetter(createTransporterDto.name),
           lastName: this.utils.capitalizeFirstLetter(createTransporterDto.lastName),
-          phone: this.utils.formatPhoneNumber(createTransporterDto.phone),
+          phone: formattedPhone,
           taxpayer: this.utils.formatIdentification(createTransporterDto.taxpayer),
         },
       });
@@ -35,17 +41,21 @@ export class TransportersService {
         newTransporter,
       };
     } catch (error) {
+      console.error('🚨 Error al crear transportador:', error);
       if (error instanceof HttpException) {
         throw error;
+      }
+      if (error instanceof Error && error.message.includes('dígitos')) {
+        throw new BadRequestException(error.message);
       }
       throw new InternalServerErrorException('Ha ocurrido un error inesperado al crear el transportador.');
     }
   }
 
   //  Listar todos los transportadores
-  async findAll(paginationDto: PaginationDto) {
+  async findAll(pagination: PaginationDto) {
     try {
-      const { page, limit } = paginationDto;
+      const { page, limit } = pagination;
       const { take, skip } = this.utils.paginateList(page, limit);
       const [transporters, total] = await Promise.all([
         this.prisma.transporter.findMany({ take, skip, orderBy: { lastName: 'asc' }}),
@@ -114,7 +124,7 @@ export class TransportersService {
       if (!transporterExists) {
         throw new HttpException('Transportista no encontrado', HttpStatus.NOT_FOUND);
       }
-      const updatedTransporter = await this.prisma.transporter.update({
+      const newTransporter = await this.prisma.transporter.update({
         where: { id },
         data: {
           name: this.utils.capitalizeFirstLetter(updateTransporterDto.name),
@@ -123,7 +133,10 @@ export class TransportersService {
           taxpayer: this.utils.formatIdentification(updateTransporterDto.taxpayer),
         },
       });
-      return updatedTransporter;
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Transportador actualizado exitosamente.',
+        newTransporter};
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
