@@ -52,7 +52,7 @@ export class CreateUserDto {
   @MaxLength(50)
   status: string;
 
-  @IsDateString()
+  @IsDateString({}, { message: 'La fecha debe estar en formato ISO: YYYY-MM-DD' })
   @IsNotEmpty()
-  dateBirth: Date;
+  dateBirth: string;
 }

@@ -39,7 +39,7 @@ export class UsersService {
           password: hashedPassword,
           role: this.utils.capitalizeFirstLetter(createUserDto.role),
           status: this.utils.capitalizeFirstLetter(createUserDto.status),
-          dateBirth: createUserDto.dateBirth,
+          dateBirth: new Date (createUserDto.dateBirth),
         }
       });
       return {
@@ -48,7 +48,7 @@ export class UsersService {
         newUser,
       };
     } catch (error) {
-      if (error instanceof HttpException) {
+        if (error instanceof HttpException) {
         throw error;
       }
       throw new InternalServerErrorException('Ha ocurrido un error inesperado al crear el usuario.');

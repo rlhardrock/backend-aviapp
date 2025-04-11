@@ -54,7 +54,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   status?: string;
 
   @IsOptional()
-  @IsDateString()
+  @IsDateString({}, { message: 'La fecha debe estar en formato ISO: YYYY-MM-DD' })
   @MaxLength(25)
-  dateBirth?: Date;
+  dateBirth?: string;
 }

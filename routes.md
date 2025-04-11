@@ -66,3 +66,17 @@ Mapped {/avi/trucks/truck/model/:model, GET} route
 Mapped {/avi/trucks/truck/paint/:paint, GET} route
 Mapped {/avi/trucks/truck/id/:id, PATCH} route
 Mapped {/avi/trucks/truck/id/:id, DELETE} route
+
+{
+  "sex": "Hombre",
+  "licenseSup": "ABC123",
+  "name": "John",
+  "lastName": "Doe",
+  "phone": "3003303030",
+  "taxpayer": "123456789",
+  "email": "sena2025@sena.com",
+  "password": "soysena123",
+  "role": "Supervisor",
+  "status": "Habilitado",
+  "dateBirth": "1990-01-15"
+}
