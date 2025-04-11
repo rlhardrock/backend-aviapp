@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { UtilsService } from '../utils/utils.service';
 import { PaginationDto } from '../utils/pagination.dto';
 import { Prisma } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -20,8 +21,12 @@ export class UsersService {
       const email = createUserDto.email.toLowerCase();
       const existingUser = await this.prisma.user.findUnique({ where: { email } });
       if (existingUser) {
-        throw new ConflictException(`El correo ${email} ya está registrado.`);
+        throw new ConflictException(`El correo ya está registrado.`);
       }
+
+      const saltOrRounds = 10;
+      const hashedPassword = await bcrypt.hash(createUserDto.password, saltOrRounds);
+
       const newUser = await this.prisma.user.create({
         data: {
           sex: this.utils.capitalizeFirstLetter(createUserDto.sex),
@@ -31,7 +36,7 @@ export class UsersService {
           phone: this.utils.formatPhoneNumber(createUserDto.phone),
           taxpayer: this.utils.formatIdentification(createUserDto.taxpayer),
           email: createUserDto.email.toLowerCase(),
-          password: createUserDto.password, // Nota: Asegúrate de cifrar la contraseña con bcrypt o similar
+          password: hashedPassword,
           role: this.utils.capitalizeFirstLetter(createUserDto.role),
           status: this.utils.capitalizeFirstLetter(createUserDto.status),
           dateBirth: createUserDto.dateBirth,
