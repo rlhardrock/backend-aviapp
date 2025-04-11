@@ -4,5 +4,9 @@ export enum ProfessionalRolesEnum {
     SUPERVISOR = 'Supervisor',
     INGENIERO = 'Ingeniero',
     VETERINARIO = 'Veterinario',
-    ZOOTECNISTA = 'Zootecnista'
+    ZOOTECNISTA = 'Zootecnista',
+    COORDINADOR = 'Coordinador',
+    CERTIFICADOR = 'Certificador',
+    ENTRENADOR = 'Entrenador',
+    SENSOR = 'Sensor'
   }
