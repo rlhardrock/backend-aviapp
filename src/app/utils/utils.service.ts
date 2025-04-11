@@ -38,21 +38,24 @@ export class UtilsService {
 
     formatPhoneNumber(phoneNumber: string): string {
         if (typeof phoneNumber !== 'string') {
-            throw new Error('El número de teléfono debe ser una cadena.');
+            throw new BadRequestException('El número de teléfono debe ser una cadena de texto.');
         }
-        const cleanNumber = phoneNumber.replace(/\D/g, ''); // elimina caracteres no numéricos
+        const cleanNumber = phoneNumber.replace(/\D/g, '');
         if (cleanNumber.length !== 10) {
             throw new BadRequestException('El número telefónico debe contener exactamente 10 dígitos numéricos.');
+        }
+        if (!cleanNumber.startsWith('3')) {
+            throw new BadRequestException('El número debe ser un móvil colombiano (iniciar por 3).');
         }
         const formatted =
             cleanNumber.slice(0, 3) + '-' +
             cleanNumber.slice(3, 4) + '-' +
             cleanNumber.slice(4, 6) + '-' +
             cleanNumber.slice(6, 8) + '-' +
-            cleanNumber.slice(8, 10);
+            cleanNumber.slice(8);
         return formatted;
     }
-          
+        
     formatString(input: string): string {
         // Convertir la cadena a mayúsculas
         let formatted = input.toUpperCase();

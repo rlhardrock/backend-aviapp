@@ -1,6 +1,6 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateCompanyDto } from './create-company.dto';
-import { IsEmail, IsOptional, IsPhoneNumber, IsString, MaxLength } from 'class-validator';
+import { IsEmail, IsOptional, IsString, Matches, MaxLength } from 'class-validator';
 
 export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {
 
@@ -14,9 +14,8 @@ export class UpdateCompanyDto extends PartialType(CreateCompanyDto) {
     @MaxLength(50)
     business?: string;
 
-    @IsPhoneNumber('CO')
     @IsOptional()
-    @MaxLength(55)
+    @Matches(/^[\d\-\.]{10,20}$/, {message: 'El número de teléfono debe comenzar con 3 y tener exactamente 10 dígitos'})
     phone?: string;
 
     @IsEmail()

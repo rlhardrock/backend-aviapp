@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, MaxLength } from "class-validator";
+import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString, Matches, MaxLength } from "class-validator";
 
 export class CreateCompanyDto {
 
@@ -12,9 +12,8 @@ export class CreateCompanyDto {
     @MaxLength(50)
     business: string;
 
-    @IsPhoneNumber('CO')
     @IsNotEmpty()
-    @MaxLength(20)
+    @Matches(/^[\d\-\.]{10,20}$/, {message: 'El número de teléfono debe comenzar con 3 y tener exactamente 10 dígitos'})
     phone: string;
 
     @IsEmail()

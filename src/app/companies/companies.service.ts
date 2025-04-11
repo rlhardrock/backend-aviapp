@@ -17,7 +17,7 @@ export class CompaniesService {
   // Crear un nuevo empresa
   async create(createCompanyDto: CreateCompanyDto) {
     try {
-      const businessFormat = this.utils.formatIdentification(createCompanyDto.business);
+      const businessFormat = this.utils.formatNIT(createCompanyDto.business);
       const existingCompany = await this.prisma.company.findFirst({ where: { business: { contains: businessFormat.trim(), mode: 'insensitive' } } });
       if (existingCompany) {
         throw new ConflictException(`El NIT de la compañia ${businessFormat} ya está registrado.`);
@@ -40,7 +40,7 @@ export class CompaniesService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException('Ha ocurrido un error inesperado al crear el usuario.');
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado al crear la compañia.');
     }
   }
 
@@ -110,7 +110,7 @@ export class CompaniesService {
   // Buscar una empresa por su identificación
   async findByBusiness(business: string) {
     try {
-      const normalizedBusiness = this.utils.formatString(business);
+      const normalizedBusiness = this.utils.formatNIT(business);
       const company = await this.prisma.company.findFirst({ where: { business: { contains: normalizedBusiness.trim(),  mode: 'insensitive' }}});
       if (!company) {
         throw new NotFoundException(`Empresa con numero de negocio ${business} no encontrada.`);
@@ -135,7 +135,7 @@ export class CompaniesService {
           where: { id },
           data: {
             name: this.utils.capitalizeFirstLetter(updateCompanyDto.name),
-            business: this.utils.formatIdentification(updateCompanyDto.business),
+            business: this.utils.formatNIT(updateCompanyDto.business),
             phone: this.utils.formatPhoneNumber(updateCompanyDto.phone),
             email: updateCompanyDto.email.toLowerCase(),
             city: this.utils.capitalizeFirstLetter(updateCompanyDto.city),

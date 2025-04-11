@@ -13,7 +13,7 @@ export class CreateTransporterDto {
     lastName: string;
 
     @IsOptional()
-    @Matches(/^\d{10}$/, { message: 'El número debe contener exactamente 10 dígitos.' })
+    @Matches(/^[\d\-\.]{10,20}$/, {message: 'El número de teléfono debe comenzar con 3 y tener exactamente 10 dígitos'})
     phone: string;
 
     @IsString()
