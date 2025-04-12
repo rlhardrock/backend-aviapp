@@ -208,26 +208,32 @@ export class UsersService {
     try {
       const existingUser = await this.prisma.user.findUnique({ where: { id } });
       if (!existingUser) {
-      throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
-    }
+        throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
+      }
+  
+      const formattedData = {
+        sex: updateUserDto.sex ? this.utils.capitalizeFirstLetter(updateUserDto.sex) : existingUser.sex,
+        name: updateUserDto.name ? this.utils.capitalizeFirstLetter(updateUserDto.name) : existingUser.name,
+        licenseSup: updateUserDto.licenseSup ? this.utils.formatString(updateUserDto.licenseSup) : existingUser.licenseSup,
+        lastName: updateUserDto.lastName ? this.utils.capitalizeFirstLetter(updateUserDto.lastName) : existingUser.lastName,
+        phone: updateUserDto.phone ? this.utils.formatPhoneNumber(updateUserDto.phone) : existingUser.phone,
+        taxpayer: updateUserDto.taxpayer ? this.utils.formatIdentification(updateUserDto.taxpayer) : existingUser.taxpayer,
+        email: updateUserDto.email ? updateUserDto.email.toLowerCase() : existingUser.email,
+        password: updateUserDto.password ? await bcrypt.hash(updateUserDto.password, 10) : existingUser.password,
+        role: updateUserDto.role ? this.utils.capitalizeFirstLetter(updateUserDto.role) : existingUser.role,
+        status: updateUserDto.status ? this.utils.capitalizeFirstLetter(updateUserDto.status) : existingUser.status,
+        dateBirth: updateUserDto.dateBirth ? new Date(updateUserDto.dateBirth) : existingUser.dateBirth,
+      };
+  
       const updatedUser = await this.prisma.user.update({
         where: { id },
-        data: {
-          sex: this.utils.capitalizeFirstLetter(updateUserDto.sex),
-          name: this.utils.capitalizeFirstLetter(updateUserDto.name),
-          licenseSup: this.utils.formatString(updateUserDto.licenseSup),
-          lastName: this.utils.capitalizeFirstLetter(updateUserDto.lastName),
-          phone: this.utils.formatPhoneNumber(updateUserDto.phone),
-          taxpayer: this.utils.formatIdentification(updateUserDto.taxpayer),
-          email: updateUserDto.email ? updateUserDto.email.toLowerCase() : existingUser.email,
-          password: updateUserDto.password,
-          /* password: updateUserDto.password ? await bcrypt.hash(updateUserDto.password, 10) : undefined, */
-          role: this.utils.capitalizeFirstLetter(updateUserDto.role),
-          status: this.utils.capitalizeFirstLetter(updateUserDto.status),
-          dateBirth: updateUserDto.dateBirth,
-        },
+        data: formattedData,
       });
-      return { message: 'Usuario actualizado satisfactoriamente', data: updatedUser };
+  
+      return {
+        message: 'Usuario actualizado satisfactoriamente',
+        data: updatedUser,
+      };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

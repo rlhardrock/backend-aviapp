@@ -6,5 +6,6 @@ export enum UserStatusEnum {
     DESPEDIDO = 'Despedido',
     RECUPERACIÓN =  'Recuperación',
     MATERNIDAD = 'Maternidad',
-    PATERNIDAD = 'Paternidad'
+    PATERNIDAD = 'Paternidad',
+    INCAPACIDAD = 'Incapacidad'
   }
