@@ -4,51 +4,52 @@ import { CreateTransporterDto } from './dto/create-transporter.dto';
 import { UpdateTransporterDto } from './dto/update-transporter.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginationDto } from '../utils/pagination.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('transporters')
 export class TransportersController {
   constructor(private readonly transportersService: TransportersService) {}
 
   // Endpoint para crear un nuevo transportador
+  @UseGuards(JwtAuthGuard)
   @Post('transporter/register')
-  /* @UseGuards(AuthGuard('jwt')) */
-  create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTransporterDto: CreateTransporterDto) {
+  async create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTransporterDto: CreateTransporterDto) {
     return this.transportersService.create(createTransporterDto);
   }
 
   // Endpoint para buscar todos los transportadores
+  @UseGuards(JwtAuthGuard)
   @Get('transporter/list') 
   @UsePipes(new ValidationPipe({ transform: true }))
-  /* @UseGuards(AuthGuard('jwt')) */
-  findAll(@Query() paginationDto: PaginationDto) {
+  async findAll(@Query() paginationDto: PaginationDto) {
     return this.transportersService.findAll(paginationDto);
   }
 
   // Endpoint para buscar un transportador por su id
+  @UseGuards(JwtAuthGuard)
   @Get('transporter/id/:id')
-  /* @UseGuards(AuthGuard('jwt')) */
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.transportersService.findOne(id);
   }
 
   // Endpoint para buscar un transportador por su transporterId
+  @UseGuards(JwtAuthGuard)
   @Get('transporter/taxpayer/:taxpayer')
-  /* @UseGuards(AuthGuard('jwt')) */
-  findOneTransporter(@Param('taxpayer') taxpayer: string) {
+  async findOneTransporter(@Param('taxpayer') taxpayer: string) {
     return this.transportersService.findOneTransporter(taxpayer);
   }
 
   // Endpoint para actualizar un transportador
+  @UseGuards(JwtAuthGuard)
   @Patch('transporter/id/:id')
-  /* @UseGuards(AuthGuard('jwt')) */
-  update(@Param('id', ParseUUIDPipe) id: string, @Body() updateTransporterDto: UpdateTransporterDto) {
+  async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateTransporterDto: UpdateTransporterDto) {
     return this.transportersService.update(id, updateTransporterDto);
   }
 
   // Endpoint para eliminar un transportador
+  @UseGuards(JwtAuthGuard)
   @Delete('transporter/id/:id')
-  /* @UseGuards(AuthGuard('jwt')) */
-  remove(@Param('id', ParseUUIDPipe) id: string) {
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.transportersService.remove(id);
   }
 }
