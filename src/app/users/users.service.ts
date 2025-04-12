@@ -187,12 +187,28 @@ export class UsersService {
     }
   }
 
+  // Encontar un usuario por Correo Electronico
+  async findByEmail(email: string) {
+    try {
+      const user = await this.prisma.user.findFirst({ where: { email: email.toLowerCase() } });
+      if (!user) {
+        throw new NotFoundException(`Usuario con correo no encontrado.`);
+      }
+      return user;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
+    }
+  }
+  
   // Encuentra un usuario especifico por ID
   async findOne(id: string) {
     try {
       const user = await this.prisma.user.findUnique({ where: { id } });
       if (!user) {
-        throw new NotFoundException(`Usuario con ID ${id} no encontrado.`);
+        throw new NotFoundException(`Usuario con ID no encontrado.`);
       }
       return user;
     } catch (error) {
@@ -239,7 +255,7 @@ export class UsersService {
         throw error;
       }
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Registro con ID ${id} no encontrado.`);
+        throw new NotFoundException(`Registro con ID no encontrado.`);
       }
       throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
@@ -249,13 +265,13 @@ export class UsersService {
   async remove(id: string) {
     try {
       await this.prisma.user.delete({ where: { id } });
-      return { message: `Usuario con ID ${id} eliminado exitosamente` };
+      return { message: `Usuario con ID eliminado exitosamente` };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Registro con ID ${id} no encontrado.`);
+        throw new NotFoundException(`Registro con ID no encontrado.`);
       }
       throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
