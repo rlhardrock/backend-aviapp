@@ -188,18 +188,22 @@ export class TrucksService {
       if (!existingTruck) {
         throw new HttpException('Camión no encontrado', HttpStatus.NOT_FOUND);
       }
+      const formattedData = {
+        brand: updateTruckDto.brand ? this.utils.capitalizeFirstLetter(updateTruckDto.brand) : existingTruck.brand,
+        model: updateTruckDto.model ? this.utils.capitalizeFirstLetter(updateTruckDto.model) : existingTruck.model,
+        paint: updateTruckDto.paint ? this.utils.capitalizeFirstLetter(updateTruckDto.paint) : existingTruck.paint,
+        year: updateTruckDto.year ? updateTruckDto.year : existingTruck.year,
+        plate: updateTruckDto.plate ? this.utils.formatString(updateTruckDto.plate) : existingTruck.plate,
+        trailer: updateTruckDto.trailer ? this.utils.capitalizeFirstLetter(updateTruckDto.trailer) : existingTruck.trailer,
+      };
       const updatedTruck = await this.prisma.truck.update({
         where: { id },
-        data: {
-          brand: this.utils.capitalizeFirstLetter(updateTruckDto.brand),
-          model: this.utils.capitalizeFirstLetter(updateTruckDto.model),
-          paint: this.utils.capitalizeFirstLetter(updateTruckDto.paint),
-          year: updateTruckDto.year,
-          plate: this.utils.formatString(updateTruckDto.plate),
-          trailer: this.utils.capitalizeFirstLetter(updateTruckDto.trailer),
-        },
+        data: formattedData,
       });
-      return updatedTruck;
+      return {
+        message: 'Camion actualizado satisfactoriamente',
+        data: updatedTruck,
+      };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

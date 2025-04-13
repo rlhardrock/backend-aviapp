@@ -226,7 +226,6 @@ export class UsersService {
       if (!existingUser) {
         throw new HttpException('Usuario no encontrado', HttpStatus.NOT_FOUND);
       }
-  
       const formattedData = {
         sex: updateUserDto.sex ? this.utils.capitalizeFirstLetter(updateUserDto.sex) : existingUser.sex,
         name: updateUserDto.name ? this.utils.capitalizeFirstLetter(updateUserDto.name) : existingUser.name,
@@ -240,12 +239,10 @@ export class UsersService {
         status: updateUserDto.status ? this.utils.capitalizeFirstLetter(updateUserDto.status) : existingUser.status,
         dateBirth: updateUserDto.dateBirth ? new Date(updateUserDto.dateBirth) : existingUser.dateBirth,
       };
-  
       const updatedUser = await this.prisma.user.update({
         where: { id },
         data: formattedData,
       });
-  
       return {
         message: 'Usuario actualizado satisfactoriamente',
         data: updatedUser,

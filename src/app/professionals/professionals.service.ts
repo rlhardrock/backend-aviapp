@@ -203,19 +203,20 @@ export class ProfessionalsService {
       if (!existingProfessional) {
         throw new HttpException('Profesional no encontrado', HttpStatus.NOT_FOUND);
       }
+      const formattedData = {
+        sex: updateProfessionalDto.sex ? this.utils.capitalizeFirstLetter(updateProfessionalDto.sex) : existingProfessional.sex,
+        license: updateProfessionalDto.license ? this.utils.formatString(updateProfessionalDto.license) : existingProfessional.license,
+        name: updateProfessionalDto.name ? this.utils.capitalizeFirstLetter(updateProfessionalDto.name) : existingProfessional.name,
+        lastName: updateProfessionalDto.lastName ? this.utils.capitalizeFirstLetter(updateProfessionalDto.lastName) : existingProfessional.lastName,
+        phone: updateProfessionalDto.phone ? this.utils.formatPhoneNumber(updateProfessionalDto.phone) : existingProfessional.phone,
+        taxpayer: updateProfessionalDto.taxpayer ? this.utils.formatIdentification(updateProfessionalDto.taxpayer) : existingProfessional.taxpayer,
+        email: updateProfessionalDto.email ? updateProfessionalDto.email.toLowerCase() : existingProfessional.email,
+        role: updateProfessionalDto.role ? this.utils.capitalizeFirstLetter(updateProfessionalDto.role) : existingProfessional.role,
+        status: updateProfessionalDto.status ? this.utils.capitalizeFirstLetter(updateProfessionalDto.status) : existingProfessional.status,
+      };
       const updatedProfessional = await this.prisma.professional.update({
         where: { id },
-        data: {
-          sex: this.utils.capitalizeFirstLetter(updateProfessionalDto.sex),
-          license: this.utils.capitalizeFirstLetter(updateProfessionalDto.license),
-          name: this.utils.capitalizeFirstLetter(updateProfessionalDto.name),
-          lastName: this.utils.capitalizeFirstLetter(updateProfessionalDto.lastName),
-          phone: this.utils.formatPhoneNumber(updateProfessionalDto.phone),
-          taxpayer: this.utils.formatIdentification(updateProfessionalDto.taxpayer),
-          email: updateProfessionalDto.email.toLowerCase(),
-          role: this.utils.capitalizeFirstLetter(updateProfessionalDto.role),
-          status: this.utils.capitalizeFirstLetter(updateProfessionalDto.status),
-        },
+        data: formattedData,
       });
       return {
         message: 'Profesional actualizado satisfactoriamente',
@@ -232,6 +233,7 @@ export class ProfessionalsService {
     }
   }
 
+  // Eliminar un profesional existente
   async remove(id: string) {
     try {
       await this.prisma.professional.delete({ where: { id } });

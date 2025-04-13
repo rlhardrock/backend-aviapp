@@ -131,23 +131,26 @@ export class CompaniesService {
       if (!existingCompany) {
         throw new HttpException('Empresa no encontrada', HttpStatus.NOT_FOUND);
       }
-        const updatedCompany = await this.prisma.company.update({
-          where: { id },
-          data: {
-            name: this.utils.capitalizeFirstLetter(updateCompanyDto.name),
-            business: this.utils.formatNIT(updateCompanyDto.business),
-            phone: this.utils.formatPhoneNumber(updateCompanyDto.phone),
-            email: updateCompanyDto.email.toLowerCase(),
-            city: this.utils.capitalizeFirstLetter(updateCompanyDto.city),
-          }
-        });
-      return { message: 'Empresa actualizada exitosamente', data: updatedCompany };
+      const formattedData = {
+        name: updateCompanyDto.name ? this.utils.capitalizeFirstLetter(updateCompanyDto.name) : existingCompany.name,
+        business: updateCompanyDto.business ? this.utils.formatNIT(updateCompanyDto.business) : existingCompany.business,
+        phone: updateCompanyDto.phone ? this.utils.formatPhoneNumber(updateCompanyDto.phone) : existingCompany.phone,
+        email: updateCompanyDto.email ? updateCompanyDto.email.toLowerCase() : existingCompany.email,
+        city: updateCompanyDto.city ? this.utils.capitalizeFirstLetter(updateCompanyDto.city) : existingCompany.city,
+      };
+      const updatedCompany = await this.prisma.company.update({
+        where: { id },
+        data: formattedData,
+      });
+      return { 
+        message: 'Empresa actualizada exitosamente', 
+        data: updatedCompany };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
       if (error.code === 'P2025') {
-        throw new NotFoundException(`Registro con ID ${id} no encontrado.`);
+        throw new NotFoundException(`La compania con ID ${id} no fue encontrada.`);
       }
       throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }

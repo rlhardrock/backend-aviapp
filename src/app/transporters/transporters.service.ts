@@ -124,19 +124,21 @@ export class TransportersService {
       if (!transporterExists) {
         throw new HttpException('Transportista no encontrado', HttpStatus.NOT_FOUND);
       }
-      const newTransporter = await this.prisma.transporter.update({
+      const formattedData = {
+        name: updateTransporterDto.name ? this.utils.capitalizeFirstLetter(updateTransporterDto.name) : transporterExists.name,
+        lastName: updateTransporterDto.lastName ? this.utils.capitalizeFirstLetter(updateTransporterDto.lastName) : transporterExists.lastName,
+        phone: updateTransporterDto.phone ? this.utils.formatPhoneNumber(updateTransporterDto.phone) : transporterExists.phone,
+        taxpayer: updateTransporterDto.taxpayer ? this.utils.formatIdentification(updateTransporterDto.taxpayer) : transporterExists.taxpayer,
+      };
+      const updatedTransporter = await this.prisma.transporter.update({
         where: { id },
-        data: {
-          name: this.utils.capitalizeFirstLetter(updateTransporterDto.name),
-          lastName: this.utils.capitalizeFirstLetter(updateTransporterDto.lastName),
-          phone: this.utils.formatPhoneNumber(updateTransporterDto.phone),
-          taxpayer: this.utils.formatIdentification(updateTransporterDto.taxpayer),
-        },
+        data: formattedData,
       });
       return {
         statusCode: HttpStatus.OK,
         message: 'Transportador actualizado exitosamente.',
-        newTransporter};
+        updatedTransporter,
+      };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
