@@ -17,7 +17,7 @@ async function bootstrap() {
 
   app.setGlobalPrefix('avi'); // Prefijo global para las rutas
 
-  /* app.use(helmet()); // Seguridad con Helmet */
+  app.use(helmet()); // Seguridad con Helmet
 
   app.useGlobalPipes(
     new ValidationPipe({
@@ -28,12 +28,13 @@ async function bootstrap() {
   );
 
   // Habilitar CORS para que el frontend pueda comunicarse con el backend
-  /* app.enableCors({
-    origin: 'https://avicola.netlify.app', // Permite solo tu frontend
+  app.enableCors({
+    //origin: 'https://avicola.netlify.app', // Permite solo tu frontend
+    origin:'http://localhost:4200',
     methods: 'GET, POST, PUT, PATCH, DELETE',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: false
-  }); */
+  });
 
   const port = process.env.PORT ?? 3000; // Definir el puerto, usando 3000 por defecto
   await app.listen(port);
