@@ -20,7 +20,7 @@ import { PrismaModule } from './prisma/prisma.module';
     CompaniesModule,
     TransportersModule,
     ProfessionalsModule,
-    TrucksModule,
+    TrucksModule, 
     PrismaModule,
   ],
   controllers: [AppController],

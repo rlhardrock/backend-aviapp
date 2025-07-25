@@ -38,7 +38,7 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 3000; // Definir el puerto, usando 3000 por defecto
   await app.listen(port);
-  console.warn(`🚀 Server running on http://localhost:${port}`);
+  console.warn(`Server running on http://localhost:${port}`);
 
 }
 
