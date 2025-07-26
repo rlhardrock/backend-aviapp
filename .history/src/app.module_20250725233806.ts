@@ -9,14 +9,13 @@ import { TransportersModule } from './app/transporters/transporters.module';
 import { ProfessionalsModule } from './app/professionals/professionals.module';
 import { TrucksModule } from './app/trucks/trucks.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { AuthModule } from './app/auth/auth.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    AuthModule,
+    A
     UsersModule,
     BenefitsModule,
     CompaniesModule,
@@ -28,4 +27,4 @@ import { AuthModule } from './app/auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

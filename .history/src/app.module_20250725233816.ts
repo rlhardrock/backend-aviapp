@@ -16,7 +16,7 @@ import { AuthModule } from './app/auth/auth.module';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    AuthModule,
+    AuthModule
     UsersModule,
     BenefitsModule,
     CompaniesModule,
@@ -28,4 +28,4 @@ import { AuthModule } from './app/auth/auth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}
