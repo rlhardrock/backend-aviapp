@@ -10,10 +10,10 @@ async function bootstrap() {
     .setTitle('API de Beneficio de Aves')
     .setDescription('Documentación de la API con Swagger')
     .setVersion('1.0') */
-    /*.addBearerAuth()*/ // Para autenticación con JWT
-    /* .build();
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document); */
+  /*.addBearerAuth()*/ // Para autenticación con JWT
+  /* .build();
+const document = SwaggerModule.createDocument(app, config);
+SwaggerModule.setup('api/docs', app, document); */
 
   app.setGlobalPrefix('avi'); // Prefijo global para las rutas
 
@@ -30,10 +30,13 @@ async function bootstrap() {
   // Habilitar CORS para que el frontend pueda comunicarse con el backend
   app.enableCors({
     //origin: 'https://avicola.netlify.app', // Permite solo tu frontend
-    origin:'http://localhost:4200',
+    origin: [
+      'http://localhost:4200',
+      'https://frontend-aviapp.netlify.app',
+    ],
     methods: 'GET, POST, PUT, PATCH, DELETE',
     allowedHeaders: 'Content-Type, Authorization',
-    credentials: false
+    credentials: true
   });
 
   const port = process.env.PORT ?? 3000; // Definir el puerto, usando 3000 por defecto

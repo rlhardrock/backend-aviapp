@@ -1,5 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ValidationPipe } from '@nestjs/common';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -7,9 +9,9 @@ async function bootstrap() {
   /* const config = new DocumentBuilder()
     .setTitle('API de Beneficio de Aves')
     .setDescription('Documentación de la API con Swagger')
-    .setVersion('1.0')
+    .setVersion('1.0') */
     /*.addBearerAuth()*/ // Para autenticación con JWT
-    .build();
+    /* .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/docs', app, document); */
 
@@ -26,16 +28,20 @@ async function bootstrap() {
   );
 
   // Habilitar CORS para que el frontend pueda comunicarse con el backend
-  /* app.enableCors({
-    origin: 'https://avicola.netlify.app', // Permite solo tu frontend
+  app.enableCors({
+    //origin: 'https://avicola.netlify.app', // Permite solo tu frontend
+    origin: [
+      'http://localhost:4200',
+      'https://frontend-aviapp.netlify.app',
+    ],
     methods: 'GET, POST, PUT, PATCH, DELETE',
     allowedHeaders: 'Content-Type, Authorization',
-    credentials: false
-  }); */
+    credentials: true
+  });
 
   const port = process.env.PORT ?? 3000; // Definir el puerto, usando 3000 por defecto
   await app.listen(port);
-  console.warn(`🚀 Server running on http://localhost:${port}`);
+  console.warn(`Server running on http://localhost:${port}`);
 
 }
 
