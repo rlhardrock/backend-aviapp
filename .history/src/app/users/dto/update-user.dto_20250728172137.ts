@@ -3,7 +3,7 @@ import { CreateUserDto } from './create-user.dto';
 import { IsOptional, IsString, IsEmail, IsDateString, MaxLength, IsPhoneNumber, Matches } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
-
+  
   @IsOptional()
   @IsString()
   @MaxLength(10)
@@ -25,7 +25,7 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
   lastName?: string;
 
   @IsOptional()
-  @Matches(/^[\d\-\.]{10,20}$/, { message: 'El número de teléfono debe comenzar con 3 y tener exactamente 10 dígitos' })
+  @Matches(/^[\d\-\.]{10,20}$/, {message: 'El número de teléfono debe comenzar con 3 y tener exactamente 10 dígitos'})
   phone?: string;
 
   @IsOptional()

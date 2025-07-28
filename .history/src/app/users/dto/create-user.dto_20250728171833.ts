@@ -1,10 +1,10 @@
 import { IsString, IsEmail, IsDateString, IsNotEmpty, MaxLength, IsPhoneNumber, Matches } from 'class-validator';
 
 export class CreateUserDto {
-
+    
   @IsString()
   @IsNotEmpty()
-  @MaxLength(10)
+  @MaxLength()
   sex: string;
 
   @IsString()
@@ -23,7 +23,7 @@ export class CreateUserDto {
   lastName: string;
 
   @IsNotEmpty()
-  @Matches(/^[\d\-\.]{10,20}$/, { message: 'El número de teléfono debe comenzar con 3 y tener exactamente 10 dígitos' })
+  @Matches(/^[\d\-\.]{10,20}$/, {message: 'El número de teléfono debe comenzar con 3 y tener exactamente 10 dígitos'})
   phone: string;
 
   @IsString()

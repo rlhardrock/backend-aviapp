@@ -3,7 +3,7 @@ import { CreateUserDto } from './create-user.dto';
 import { IsOptional, IsString, IsEmail, IsDateString, MaxLength, IsPhoneNumber, Matches } from 'class-validator';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {
-
+  
   @IsOptional()
   @IsString()
   @MaxLength(10)
@@ -11,26 +11,26 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsString()
-  @MaxLength(50)
+  @MaxLength()
   licenseSup?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(50)
+  @MaxLength()
   name?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(50)
+  @MaxLength()
   lastName?: string;
 
   @IsOptional()
-  @Matches(/^[\d\-\.]{10,20}$/, { message: 'El número de teléfono debe comenzar con 3 y tener exactamente 10 dígitos' })
+  @Matches(/^[\d\-\.]{10,20}$/, {message: 'El número de teléfono debe comenzar con 3 y tener exactamente 10 dígitos'})
   phone?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(50)
+  @MaxLength()
   taxpayer?: string;
 
   @IsOptional()
@@ -40,21 +40,21 @@ export class UpdateUserDto extends PartialType(CreateUserDto) {
 
   @IsOptional()
   @IsString()
-  @MaxLength(50)
+  @MaxLength()
   password?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(50)
+  @MaxLength()
   role?: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(50)
+  @MaxLength()
   status?: string;
 
   @IsOptional()
   @IsDateString({}, { message: 'La fecha debe estar en formato ISO: YYYY-MM-DD' })
-  @MaxLength(50)
+  @MaxLength()
   dateBirth?: string;
 }
