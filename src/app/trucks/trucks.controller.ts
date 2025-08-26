@@ -67,4 +67,11 @@ export class TrucksController {
   async remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.trucksService.remove(id);
   }
+
+  // Endpoint para carga masiva
+  @Post('truck/bulk-upload')
+  async bulkUpload(@Body() body: { trucks: any[] }) {
+    return this.truckService.bulkInsert(body.trucks);
+  }
+
 }

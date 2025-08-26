@@ -230,4 +230,10 @@ export class TrucksService {
       throw new InternalServerErrorException('Ha ocurrido un error inesperado.');
     }
   }
+
+  // Carga Masiva
+  async bulkInsert(trucks: any[]) {
+    return await this.truck.save(trucks);
+  }
+
 }
