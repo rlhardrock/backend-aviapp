@@ -71,7 +71,7 @@ export class TrucksController {
   // Endpoint para carga masiva
   @Post('truck/bulk-upload')
   async bulkUpload(@Body() body: { trucks: any[] }) {
-    return this.truckService.bulkInsert(body.trucks);
+    return this.trucksService.bulkInsert(body.trucks);
   }
 
 }

@@ -101,4 +101,51 @@ export class UtilsService {
         };
     }
 
+    normalizeTruck(truck: any) {
+    const errors: string[] = [];
+    // Validar y normalizar placa
+    if (!truck.plate || typeof truck.plate !== 'string') {
+      errors.push('La placa es obligatoria y debe ser texto.');
+    } else {
+      truck.plate = truck.plate.toUpperCase().trim();
+    }
+    // Validar marca
+    if (!truck.brand || typeof truck.brand !== 'string') {
+      errors.push('La marca es obligatoria.');
+    }
+    // Validar modelo
+    if (!truck.model || typeof truck.model !== 'string') {
+      errors.push('El modelo es obligatorio.');
+    }
+    // Validar pintura
+    if (!truck.paint) {
+      truck.paint = 'Sin definir';
+    }
+    // Validar año
+    if (!truck.year || isNaN(Number(truck.year))) {
+      errors.push('El año debe ser numérico.');
+    } else {
+      truck.year = Number(truck.year);
+    }
+    // Validar trailer
+    if (!truck.trailer) {
+      truck.trailer = 'N/A';
+    }
+    return { truck, errors };
+  }
+
+  /* Normaliza y valida un conjunto de camiones  */
+  normalizeTrucks(trucks: any[]) {
+    const valid: any[] = [];
+    const invalid: { row: number; errors: string[] }[] = [];
+    trucks.forEach((t, index) => {
+      const { truck, errors } = this.normalizeTruck(t);
+      if (errors.length > 0) {
+        invalid.push({ row: index + 1, errors });
+      } else {
+        valid.push(truck);
+      }
+    });
+    return { valid, invalid };
+  }
 }

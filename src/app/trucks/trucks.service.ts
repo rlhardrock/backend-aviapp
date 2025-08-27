@@ -233,7 +233,17 @@ export class TrucksService {
 
   // Carga Masiva
   async bulkInsert(trucks: any[]) {
-    return await this.truck.save(trucks);
+  const { valid, invalid } = this.utils.normalizeTrucks(trucks);
+  if (invalid.length > 0) {
+      return {
+        message: 'Algunos registros no son válidos',
+        invalid,
+      };
+    }
+    return await this.prisma.truck.createMany({
+      data: valid,
+      skipDuplicates: true,
+    });
   }
 
 }
